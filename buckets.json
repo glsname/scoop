@@ -1,5 +1,5 @@
 {
-    "main": "https://github.com/ScoopInstaller/Main",
+    "main": "https://gitee.com/glsnames/scoop-main",
     "extras": "https://github.com/ScoopInstaller/Extras",
     "versions": "https://github.com/ScoopInstaller/Versions",
     "nightlies": "https://github.com/ScoopInstaller/Nightlies",
