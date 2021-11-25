@@ -41,7 +41,7 @@ $all = $opt.a -or $opt.all
 # load config
 $configRepo = get_config SCOOP_REPO
 if (!$configRepo) {
-    $configRepo = "https://gitee.com/glsnames/scoop-installer"
+    $configRepo = "https://github.com/lukesampson/scoop"
     set_config SCOOP_REPO $configRepo | Out-Null
 }
 
@@ -124,7 +124,7 @@ function update_scoop() {
     }
 
     if ((Get-LocalBucket) -notcontains 'main') {
-        info "The main bucket of Scoop has been separated to 'https://gitee.com/glsnames/scoop-main'"
+        info "The main bucket of Scoop has been separated to 'https://github.com/ScoopInstaller/Main'"
         info "Adding main bucket..."
         add_bucket 'main'
     }
@@ -199,7 +199,7 @@ function update($app, $global, $quiet = $false, $independent, $suggested, $use_c
     write-host "Updating '$app' ($old_version -> $version)"
 
     # region Workaround
-    # Workaround for https://gitee.com/glsnames/scoop-installer/issues/2220 until install is refactored
+    # Workaround for https://github.com/lukesampson/scoop/issues/2220 until install is refactored
     # Remove and replace whole region after proper fix
     Write-Host "Downloading new version"
     if (Test-Aria2Enabled) {

@@ -28,7 +28,7 @@ if ([System.Enum]::GetNames([System.Net.SecurityProtocolType]) -notcontains 'Tls
 }
 
 # get core functions
-$core_url = 'https://gitee.com/glsnames/scoop-installer/raw/master/lib/core.ps1'
+$core_url = 'https://raw.githubusercontent.com/ScoopInstaller/Scoop/master/lib/core.ps1'
 Write-Output 'Initializing...'
 Invoke-Expression (new-object net.webclient).downloadstring($core_url)
 
@@ -41,7 +41,7 @@ if (installed 'scoop') {
 $dir = ensure (versiondir 'scoop' 'current')
 
 # download scoop zip
-$zipurl = 'https://download.glimmer.ltd/scoop-install-master.zip'
+$zipurl = 'https://github.com/ScoopInstaller/Scoop/archive/master.zip'
 $zipfile = "$dir\scoop.zip"
 Write-Output 'Downloading scoop...'
 dl $zipurl $zipfile
@@ -57,7 +57,7 @@ shim "$dir\bin\scoop.ps1" $false
 
 # download main bucket
 $dir = "$scoopdir\buckets\main"
-$zipurl = 'https://download.glimmer.ltd/scoop-master.zip'
+$zipurl = 'https://github.com/ScoopInstaller/Main/archive/master.zip'
 $zipfile = "$dir\main-bucket.zip"
 Write-Output 'Downloading main bucket...'
 New-Item $dir -Type Directory -Force | Out-Null

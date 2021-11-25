@@ -67,10 +67,10 @@ If you've built software that you'd like others to use, Scoop is an alternative 
 Run the following command from your PowerShell to install scoop to its default location (`C:\Users\<user>\scoop`)
 
 ```powershell
-Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://gitee.com/glsnames/scoop-installer/raw/master/bin/install.ps1')
+Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
 
 # or shorter
-iwr -useb gitee.com/glsnames/scoop-installer/raw/master/bin/install.ps1 | iex
+iwr -useb get.scoop.sh | iex
 ```
 
 Once installed, run `scoop help` for instructions.
