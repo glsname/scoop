@@ -41,7 +41,7 @@ if (installed 'scoop') {
 $dir = ensure (versiondir 'scoop' 'current')
 
 # download scoop zip
-$zipurl = 'https://www.glimmer.ltd/dl/scoop-install-master.zip'
+$zipurl = 'https://download.glimmer.ltd/scoop-install-master.zip'
 $zipfile = "$dir\scoop.zip"
 Write-Output 'Downloading scoop...'
 dl $zipurl $zipfile
@@ -57,7 +57,7 @@ shim "$dir\bin\scoop.ps1" $false
 
 # download main bucket
 $dir = "$scoopdir\buckets\main"
-$zipurl = 'https://www.glimmer.ltd/dl/scoop-master.zip'
+$zipurl = 'https://download.glimmer.ltd/scoop-master.zip'
 $zipfile = "$dir\main-bucket.zip"
 Write-Output 'Downloading main bucket...'
 New-Item $dir -Type Directory -Force | Out-Null
