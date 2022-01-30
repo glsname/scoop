@@ -57,7 +57,7 @@ shim "$dir\bin\scoop.ps1" $false
 
 # download main bucket
 $dir = "$scoopdir\buckets\main"
-$zipurl = 'http://173.82.155.228:9012/chfs/shared/public/scoop-master.zip'
+$zipurl = 'http://173.82.155.228:9012/chfs/shared/public/scoop-main-master.zip'
 $zipfile = "$dir\main-bucket.zip"
 Write-Output 'Downloading main bucket...'
 New-Item $dir -Type Directory -Force | Out-Null
