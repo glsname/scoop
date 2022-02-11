@@ -54,27 +54,33 @@ function get_config($name, $default) {
     return $scoopConfig.$name
 }
 
-function set_config($name, $value) {
-    if($null -eq $scoopConfig -or $scoopConfig.Count -eq 0) {
+function set_config {
+    Param (
+        [ValidateNotNullOrEmpty()]
+        $name,
+        $value
+    )
+
+    if ($null -eq $scoopConfig -or $scoopConfig.Count -eq 0) {
         ensure (Split-Path -Path $configFile) | Out-Null
-        $scoopConfig = New-Object PSObject
-        $scoopConfig | Add-Member -MemberType NoteProperty -Name $name -Value $value
-    } else {
-        if($value -eq [bool]::TrueString -or $value -eq [bool]::FalseString) {
-            $value = [System.Convert]::ToBoolean($value)
-        }
-        if($null -eq $scoopConfig.$name) {
-            $scoopConfig | Add-Member -MemberType NoteProperty -Name $name -Value $value
-        } else {
-            $scoopConfig.$name = $value
-        }
+        $scoopConfig = New-Object -TypeName PSObject
     }
 
-    if($null -eq $value) {
+    if ($value -eq [bool]::TrueString -or $value -eq [bool]::FalseString) {
+        $value = [System.Convert]::ToBoolean($value)
+    }
+
+    if ($null -eq $scoopConfig.$name) {
+        $scoopConfig | Add-Member -MemberType NoteProperty -Name $name -Value $value
+    } else {
+        $scoopConfig.$name = $value
+    }
+
+    if ($null -eq $value) {
         $scoopConfig.PSObject.Properties.Remove($name)
     }
 
-    ConvertTo-Json $scoopConfig | Set-Content $configFile -Encoding ASCII
+    ConvertTo-Json $scoopConfig | Set-Content -Path $configFile -Encoding Default
     return $scoopConfig
 }
 
@@ -105,6 +111,15 @@ function setup_proxy() {
     } catch {
         warn "Failed to use proxy '$proxy': $($_.exception.message)"
     }
+}
+
+function git_cmd {
+    $proxy = get_config 'proxy'
+    $cmd = "git $($args | ForEach-Object { "$_ " })"
+    if ($proxy -and $proxy -ne 'none') {
+        $cmd = "SET HTTPS_PROXY=$proxy&&SET HTTP_PROXY=$proxy&&$cmd"
+    }
+    cmd.exe /d /c $cmd
 }
 
 # helper functions
@@ -178,6 +193,16 @@ function appsdir($global) { "$(basedir $global)\apps" }
 function shimdir($global) { "$(basedir $global)\shims" }
 function appdir($app, $global) { "$(appsdir $global)\$app" }
 function versiondir($app, $version, $global) { "$(appdir $app $global)\$version" }
+
+function currentdir($app, $global) {
+    if (get_config NO_JUNCTIONS) {
+        $version = Select-CurrentVersion -App $app -Global:$global
+    } else {
+        $version = 'current'
+    }
+    "$(appdir $app $global)\$version"
+}
+
 function persistdir($app, $global) { "$(basedir $global)\persist\$app" }
 function usermanifestsdir { "$(basedir)\workspace" }
 function usermanifest($app) { "$(usermanifestsdir)\$app.json" }
@@ -185,19 +210,26 @@ function cache_path($app, $version, $url) { "$cachedir\$app#$version#$($url -rep
 
 # apps
 function sanitary_path($path) { return [regex]::replace($path, "[/\\?:*<>|]", "") }
-function installed($app, $global=$null) {
-    if($null -eq $global) { return (installed $app $true) -or (installed $app $false) }
+function installed($app, $global) {
     # Dependencies of the format "bucket/dependency" install in a directory of form
     # "dependency". So we need to extract the bucket from the name and only give the app
     # name to is_directory
-    $app = $app.split("/")[-1]
-    return is_directory (appdir $app $global)
+    $app = ($app -split '/|\\')[-1]
+    return $null -ne (Select-CurrentVersion -AppName $app -Global:$global)
 }
 function installed_apps($global) {
     $dir = appsdir $global
-    if(test-path $dir) {
+    if (Test-Path $dir) {
         Get-ChildItem $dir | Where-Object { $_.psiscontainer -and $_.name -ne 'scoop' } | ForEach-Object { $_.name }
     }
+}
+
+# check whether the app failed to install
+function failed($app, $global) {
+    $app = ($app -split '/|\\')[-1]
+    $appPath = appdir $app $global
+    $hasCurrent = (get_config NO_JUNCTIONS) -or (Test-Path "$appPath\current")
+    return (Test-Path $appPath) -and !($hasCurrent -and (installed $app $global))
 }
 
 function file_path($app, $file) {
@@ -207,6 +239,7 @@ function file_path($app, $file) {
 
 function Get-AppFilePath {
     [CmdletBinding()]
+    [OutputType([String])]
     param(
         [Parameter(Mandatory = $true, Position = 0)]
         [String]
@@ -217,14 +250,14 @@ function Get-AppFilePath {
     )
 
     # normal path to file
-    $Path = "$(versiondir $App 'current' $false)\$File"
-    if(Test-Path $Path) {
+    $Path = "$(currentdir $App $false)\$File"
+    if (Test-Path $Path) {
         return $Path
     }
 
     # global path to file
-    $Path = "$(versiondir $App 'current' $true)\$File"
-    if(Test-Path $Path) {
+    $Path = "$(currentdir $App $true)\$File"
+    if (Test-Path $Path) {
         return $Path
     }
 
@@ -241,34 +274,38 @@ Function Test-CommandAvailable {
 
 function Get-HelperPath {
     [CmdletBinding()]
+    [OutputType([String])]
     param(
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [ValidateSet('7zip', 'Lessmsi', 'Innounp', 'Dark', 'Aria2', 'Zstd')]
         [String]
         $Helper
     )
-
-    $HelperPath = $null
-    switch ($Helper) {
-        '7zip' {
-            $HelperPath = Get-AppFilePath '7zip' '7z.exe'
-            if([String]::IsNullOrEmpty($HelperPath)) {
-                $HelperPath = Get-AppFilePath '7zip-zstd' '7z.exe'
-            }
-        }
-        'Lessmsi' { $HelperPath = Get-AppFilePath 'lessmsi' 'lessmsi.exe' }
-        'Innounp' { $HelperPath = Get-AppFilePath 'innounp' 'innounp.exe' }
-        'Dark' {
-            $HelperPath = Get-AppFilePath 'dark' 'dark.exe'
-            if([String]::IsNullOrEmpty($HelperPath)) {
-                $HelperPath = Get-AppFilePath 'wixtoolset' 'dark.exe'
-            }
-        }
-        'Aria2' { $HelperPath = Get-AppFilePath 'aria2' 'aria2c.exe' }
-        'Zstd' { $HelperPath = Get-AppFilePath 'zstd' 'zstd.exe' }
+    begin {
+        $HelperPath = $null
     }
+    process {
+        switch ($Helper) {
+            '7zip' {
+                $HelperPath = Get-AppFilePath '7zip' '7z.exe'
+                if ([String]::IsNullOrEmpty($HelperPath)) {
+                    $HelperPath = Get-AppFilePath '7zip-zstd' '7z.exe'
+                }
+            }
+            'Lessmsi' { $HelperPath = Get-AppFilePath 'lessmsi' 'lessmsi.exe' }
+            'Innounp' { $HelperPath = Get-AppFilePath 'innounp' 'innounp.exe' }
+            'Dark' {
+                $HelperPath = Get-AppFilePath 'dark' 'dark.exe'
+                if ([String]::IsNullOrEmpty($HelperPath)) {
+                    $HelperPath = Get-AppFilePath 'wixtoolset' 'dark.exe'
+                }
+            }
+            'Aria2' { $HelperPath = Get-AppFilePath 'aria2' 'aria2c.exe' }
+            'Zstd' { $HelperPath = Get-AppFilePath 'zstd' 'zstd.exe' }
+        }
 
-    return $HelperPath
+        return $HelperPath
+    }
 }
 
 function Test-HelperInstalled {
@@ -289,13 +326,13 @@ function Test-Aria2Enabled {
 
 function app_status($app, $global) {
     $status = @{}
-    $status.installed = (installed $app $global)
+    $status.installed = installed $app $global
     $status.version = Select-CurrentVersion -AppName $app -Global:$global
     $status.latest_version = $status.version
 
     $install_info = install_info $app $status.version $global
 
-    $status.failed = (!$install_info -or !$status.version)
+    $status.failed = failed $app $global
     $status.hold = ($install_info.hold -eq $true)
 
     $manifest = manifest $app $install_info.bucket $install_info.url
@@ -314,9 +351,13 @@ function app_status($app, $global) {
     }
 
     $status.missing_deps = @()
-    $deps = @(runtime_deps $manifest) | Where-Object {
-        $app, $bucket, $null = parse_app $_
-        return !(installed $app)
+    $deps = @($manifest.depends) | Where-Object {
+        if ($null -eq $_) {
+            return $null
+        } else {
+            $app, $bucket, $null = parse_app $_
+            return !(installed $app)
+        }
     }
     if ($deps) {
         $status.missing_deps += , $deps
@@ -525,10 +566,14 @@ function movedir($from, $to) {
 }
 
 function get_app_name($path) {
-    if ($path -match '([^/\\]+)[/\\]current[/\\]') {
-        return $matches[1].tolower()
+    if ((Test-Path (appsdir $false)) -and ($path -match "$([Regex]::Escape($(Convert-Path (appsdir $false))))[/\\]([^/\\]+)")) {
+        $appName = $Matches[1].ToLower()
+    } elseif ((Test-Path (appsdir $true)) -and ($path -match "$([Regex]::Escape($(Convert-Path (appsdir $true))))[/\\]([^/\\]+)")) {
+        $appName = $Matches[1].ToLower()
+    } else {
+        $appName = ''
     }
-    return ''
+    return $appName
 }
 
 function get_app_name_from_shim($shim) {
@@ -577,76 +622,96 @@ function shim($path, $global, $name, $arg) {
     } elseif ($path -match '\.(bat|cmd)$') {
         # shim .bat, .cmd so they can be used by programs with no awareness of PSH
         warn_on_overwrite "$shim.cmd" $path
-        "@rem $resolved_path
-@`"$resolved_path`" $arg %*" | Out-File "$shim.cmd" -Encoding ASCII
+        @(
+            "@rem $resolved_path",
+            "@`"$resolved_path`" $arg %*"
+        ) -join "`r`n" | Out-File "$shim.cmd" -Encoding ASCII
 
         warn_on_overwrite $shim $path
-        "#!/bin/sh
-# $resolved_path
-MSYS2_ARG_CONV_EXCL=/C cmd.exe /C `"$resolved_path`" $arg `"$@`"" | Out-File $shim -Encoding ASCII
+        @(
+            "#!/bin/sh",
+            "# $resolved_path",
+            "MSYS2_ARG_CONV_EXCL=/C cmd.exe /C `"$resolved_path`" $arg `"$@`""
+        ) -join "`n" | Out-File $shim -Encoding ASCII -NoNewline
     } elseif ($path -match '\.ps1$') {
         # if $path points to another drive resolve-path prepends .\ which could break shims
         warn_on_overwrite "$shim.ps1" $path
-        $ps1text = if ($relative_path -match '^(.\\[\w]:).*$') {
-            "# $resolved_path
-`$path = `"$path`"
-if(`$myinvocation.expectingInput) { `$input | & `$path $arg @args } else { & `$path $arg @args }
-exit `$lastexitcode"
+        $ps1text = if ($relative_path -match '^(\.\\)?\w:.*$') {
+            @(
+                "# $resolved_path",
+                "`$path = `"$path`"",
+                "if (`$MyInvocation.ExpectingInput) { `$input | & `$path $arg @args } else { & `$path $arg @args }",
+                "exit `$LASTEXITCODE"
+            )
         } else {
             # Setting PSScriptRoot in Shim if it is not defined, so the shim doesn't break in PowerShell 2.0
-            "# $resolved_path
-if (!(Test-Path Variable:PSScriptRoot)) { `$PSScriptRoot = Split-Path `$MyInvocation.MyCommand.Path -Parent }
-`$path = join-path `"`$psscriptroot`" `"$relative_path`"
-if(`$myinvocation.expectingInput) { `$input | & `$path $arg @args } else { & `$path $arg @args }
-exit `$lastexitcode"
+            @(
+                "# $resolved_path",
+                "if (!(Test-Path Variable:PSScriptRoot)) { `$PSScriptRoot = Split-Path `$MyInvocation.MyCommand.Path -Parent }",
+                "`$path = Join-Path `"`$PSScriptRoot`" `"$relative_path`"",
+                "if (`$MyInvocation.ExpectingInput) { `$input | & `$path $arg @args } else { & `$path $arg @args }",
+                "exit `$LASTEXITCODE"
+            )
         }
-        $ps1text | Out-File "$shim.ps1" -Encoding ASCII
+        $ps1text -join "`r`n" | Out-File "$shim.ps1" -Encoding ASCII
 
         # make ps1 accessible from cmd.exe
         warn_on_overwrite "$shim.cmd" $path
-        "@rem $resolved_path
-@echo off
-setlocal enabledelayedexpansion
-set args=%*
-:: replace problem characters in arguments
-set args=%args:`"='%
-set args=%args:(=``(%
-set args=%args:)=``)%
-set invalid=`"='
-if !args! == !invalid! ( set args= )
-where /q pwsh.exe
-if %errorlevel% equ 0 (
-    pwsh -noprofile -ex unrestricted -command `"& '$resolved_path' $arg %args%;exit `$lastexitcode`"
-) else (
-    powershell -noprofile -ex unrestricted -command `"& '$resolved_path' $arg %args%;exit `$lastexitcode`"
-)" | Out-File "$shim.cmd" -Encoding ASCII
+        @(
+            "@rem $resolved_path",
+            "@echo off",
+            "setlocal enabledelayedexpansion",
+            "set args=%*",
+            ":: replace problem characters in arguments",
+            "set args=%args:`"='%",
+            "set args=%args:(=``(%",
+            "set args=%args:)=``)%",
+            "set invalid=`"='",
+            "if !args! == !invalid! ( set args= )",
+            "where /q pwsh.exe",
+            "if %errorlevel% equ 0 (",
+            "    pwsh -noprofile -ex unrestricted -file `"$resolved_path`" $arg %args%",
+            ") else (",
+            "    powershell -noprofile -ex unrestricted -file `"$resolved_path`" $arg %args%",
+            ")"
+        ) -join "`r`n" | Out-File "$shim.cmd" -Encoding ASCII
 
         warn_on_overwrite $shim $path
-        "#!/bin/sh
-# $resolved_path
-if command -v pwsh.exe &> /dev/null; then
-    pwsh.exe -noprofile -ex unrestricted -command `"& '$resolved_path' $arg $@;exit \`$lastexitcode`"
-else
-    powershell.exe -noprofile -ex unrestricted -command `"& '$resolved_path' $arg $@;exit \`$lastexitcode`"
-fi" | Out-File $shim -Encoding ASCII
+        @(
+            "#!/bin/sh",
+            "# $resolved_path",
+            "if command -v pwsh.exe > /dev/null 2>&1; then",
+            "    pwsh.exe -noprofile -ex unrestricted -file `"$resolved_path`" $arg $@",
+            "else",
+            "    powershell.exe -noprofile -ex unrestricted -file `"$resolved_path`" $arg $@",
+            "fi"
+        ) -join "`n" | Out-File $shim -Encoding ASCII -NoNewline
     } elseif ($path -match '\.jar$') {
         warn_on_overwrite "$shim.cmd" $path
-        "@rem $resolved_path
-@java -jar `"$resolved_path`" $arg %*" | Out-File "$shim.cmd" -Encoding ASCII
+        @(
+            "@rem $resolved_path",
+            "@java -jar `"$resolved_path`" $arg %*"
+        ) -join "`r`n" | Out-File "$shim.cmd" -Encoding ASCII
 
         warn_on_overwrite $shim $path
-        "#!/bin/sh
-# $resolved_path
-java -jar `"$resolved_path`" $arg `"$@`"" | Out-File $shim -Encoding ASCII
+        @(
+            "#!/bin/sh",
+            "# $resolved_path",
+            "java.exe -jar `"$resolved_path`" $arg `"$@`""
+        ) -join "`n" | Out-File $shim -Encoding ASCII -NoNewline
     } elseif ($path -match '\.py$') {
         warn_on_overwrite "$shim.cmd" $path
-        "@rem $resolved_path
-@python `"$resolved_path`" $arg %*" | Out-File "$shim.cmd" -Encoding ASCII
+        @(
+            "@rem $resolved_path",
+            "@python `"$resolved_path`" $arg %*"
+        ) -join "`r`n" | Out-File "$shim.cmd" -Encoding ASCII
 
         warn_on_overwrite $shim $path
-        "#!/bin/sh
-# $resolved_path
-python `"$resolved_path`" $arg `"$@`"" | Out-File $shim -Encoding ASCII
+        @(
+            "#!/bin/sh",
+            "# $resolved_path",
+            "python.exe `"$resolved_path`" $arg `"$@`""
+        ) -join "`n" | Out-File $shim -Encoding ASCII -NoNewline
     } else {
         warn_on_overwrite "$shim.cmd" $path
         # find path to Git's bash so that batch scripts can run bash scripts
@@ -654,13 +719,17 @@ python `"$resolved_path`" $arg `"$@`"" | Out-File $shim -Encoding ASCII
         if ($gitdir.FullName -imatch 'mingw') {
             $gitdir = $gitdir.Parent
         }
-        "@rem $resolved_path
-@`"$(Join-Path (Join-Path $gitdir.FullName 'bin') 'bash.exe')`" `"$resolved_path`" $arg %*" | Out-File "$shim.cmd" -Encoding ASCII
+        @(
+            "@rem $resolved_path",
+            "@`"$(Join-Path (Join-Path $gitdir.FullName 'bin') 'bash.exe')`" `"$resolved_path`" $arg %*"
+        ) -join "`r`n" | Out-File "$shim.cmd" -Encoding ASCII
 
         warn_on_overwrite $shim $path
-        "#!/bin/sh
-# $resolved_path
-`"$resolved_path`" $arg `"$@`"" | Out-File $shim -Encoding ASCII
+        @(
+            "#!/bin/sh",
+            "# $resolved_path",
+            "`"$resolved_path`" $arg `"$@`""
+        ) -join "`n" | Out-File $shim -Encoding ASCII -NoNewline
     }
 }
 
@@ -711,6 +780,7 @@ function ensure_architecture($architecture_opt) {
 
 function Confirm-InstallationStatus {
     [CmdletBinding()]
+    [OutputType([Object[]])]
     param(
         [Parameter(Mandatory = $true)]
         [String[]]
@@ -722,26 +792,29 @@ function Confirm-InstallationStatus {
     $Apps | Select-Object -Unique | Where-Object { $_.Name -ne 'scoop' } | ForEach-Object {
         $App, $null, $null = parse_app $_
         if ($Global) {
-            if (installed $App $true) {
-                $Installed += ,@($App, $true)
-            } elseif (installed $App $false) {
-                error "'$App' isn't installed globally, but it is installed for your account."
+            if (Test-Path (appdir $App $true)) {
+                $Installed += , @($App, $true)
+            } elseif (Test-Path (appdir $App $false)) {
+                error "'$App' isn't installed globally, but it may be installed locally."
                 warn "Try again without the --global (or -g) flag instead."
             } else {
                 error "'$App' isn't installed."
             }
         } else {
-            if(installed $App $false) {
-                $Installed += ,@($App, $false)
-            } elseif (installed $App $true) {
-                error "'$App' isn't installed for your account, but it is installed globally."
+            if (Test-Path (appdir $App $false)) {
+                $Installed += , @($App, $false)
+            } elseif (Test-Path (appdir $App $true)) {
+                error "'$App' isn't installed locally, but it may be installed globally."
                 warn "Try again with the --global (or -g) flag instead."
             } else {
                 error "'$App' isn't installed."
             }
         }
+        if (failed $App $Global) {
+            error "'$App' isn't installed correctly."
+        }
     }
-    return ,$Installed
+    return , $Installed
 }
 
 function strip_path($orig_path, $dir) {

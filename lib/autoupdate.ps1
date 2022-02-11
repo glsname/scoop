@@ -51,7 +51,7 @@ function find_hash_in_textfile([String] $url, [Hashtable] $substitutions, [Strin
     }
 
     if ($regex.Length -eq 0) {
-        $regex = '^([a-fA-F0-9]+)$'
+        $regex = '^\s*([a-fA-F0-9]+)\s*$'
     }
 
     $regex = substitute $regex $templates $false
@@ -152,7 +152,7 @@ function find_hash_in_headers([String] $url) {
         $req.Timeout = 2000
         $req.Method = 'HEAD'
         $res = $req.GetResponse()
-        if(([int]$response.StatusCode -ge 300) -and ([int]$response.StatusCode -lt 400)) {
+        if(([int]$res.StatusCode -ge 300) -and ([int]$res.StatusCode -lt 400)) {
             if($res.Headers['Digest'] -match 'SHA-256=([^,]+)' -or $res.Headers['Digest'] -match 'SHA=([^,]+)' -or $res.Headers['Digest'] -match 'MD5=([^,]+)') {
                 $hash = ([System.Convert]::FromBase64String($matches[1]) | ForEach-Object { $_.ToString('x2') }) -join ''
                 debug $hash

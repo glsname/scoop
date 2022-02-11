@@ -608,9 +608,9 @@ function dl_urls($app, $version, $manifest, $bucket, $architecture, $dir, $use_c
             } else {
                 $extract_fn = 'Expand-MsiArchive'
             }
-        } elseif(Test-ZstdRequirement -File $fname) { # Zstd first
+        } elseif(Test-ZstdRequirement -Uri $fname) { # Zstd first
             $extract_fn = 'Expand-ZstdArchive'
-        } elseif(Test-7zipRequirement -File $fname) { # 7zip
+        } elseif(Test-7zipRequirement -Uri $fname) { # 7zip
             $extract_fn = 'Expand-7zipArchive'
         }
 
@@ -897,37 +897,29 @@ function rm_shims($manifest, $global, $arch) {
     }
 }
 
-# Gets the path for the 'current' directory junction for
-# the specified version directory.
-function current_dir($versiondir) {
-    $parent = split-path $versiondir
-    return "$parent\current"
-}
-
-
 # Creates or updates the directory junction for [app]/current,
 # pointing to the specified version directory for the app.
 #
 # Returns the 'current' junction directory if in use, otherwise
 # the version directory.
 function link_current($versiondir) {
-    if(get_config NO_JUNCTIONS) { return $versiondir }
+    if (get_config NO_JUNCTIONS) { return $versiondir.ToString() }
 
-    $currentdir = current_dir $versiondir
+    $currentdir = "$(Split-Path $versiondir)\current"
 
-    write-host "Linking $(friendly_path $currentdir) => $(friendly_path $versiondir)"
+    Write-Host "Linking $(friendly_path $currentdir) => $(friendly_path $versiondir)"
 
-    if($currentdir -eq $versiondir) {
+    if ($currentdir -eq $versiondir) {
         abort "Error: Version 'current' is not allowed!"
     }
 
-    if(test-path $currentdir) {
+    if (Test-Path $currentdir) {
         # remove the junction
         attrib -R /L $currentdir
-        & "$env:COMSPEC" /c rmdir $currentdir
+        Remove-Item $currentdir -Recurse -Force -ErrorAction Stop
     }
 
-    & "$env:COMSPEC" /c mklink /j $currentdir $versiondir | out-null
+    New-Item -Path $currentdir -ItemType Junction -Value $versiondir | Out-Null
     attrib $currentdir +R /L
     return $currentdir
 }
@@ -938,17 +930,17 @@ function link_current($versiondir) {
 # Returns the 'current' junction directory (if it exists),
 # otherwise the normal version directory.
 function unlink_current($versiondir) {
-    if(get_config NO_JUNCTIONS) { return $versiondir }
-    $currentdir = current_dir $versiondir
+    if (get_config NO_JUNCTIONS) { return $versiondir.ToString() }
+    $currentdir = "$(Split-Path $versiondir)\current"
 
-    if(test-path $currentdir) {
-        write-host "Unlinking $(friendly_path $currentdir)"
+    if (Test-Path $currentdir) {
+        Write-Host "Unlinking $(friendly_path $currentdir)"
 
         # remove read-only attribute on link
         attrib $currentdir -R /L
 
         # remove the junction
-        & "$env:COMSPEC" /c "rmdir `"$currentdir`""
+        Remove-Item $currentdir -Recurse -Force -ErrorAction Stop
         return $currentdir
     }
     return $versiondir
@@ -1077,19 +1069,19 @@ function prune_installed($apps, $global) {
     return @($uninstalled), @($installed)
 }
 
-# check whether the app failed to install
-function failed($app, $global) {
-    if (is_directory (appdir $app $global)) {
-        return !(install_info $app (Select-CurrentVersion -AppName $app -Global:$global) $global)
-    } else {
-        return $false
-    }
-}
-
-function ensure_none_failed($apps, $global) {
-    foreach($app in $apps) {
-        if(failed $app $global) {
-            abort "'$app' install failed previously. Please uninstall it and try again."
+function ensure_none_failed($apps) {
+    foreach ($app in $apps) {
+        $app = ($app -split '/|\\')[-1] -replace '\.json$', ''
+        foreach ($global in $true, $false) {
+            if (failed $app $global) {
+                if (installed $app $global) {
+                    info "Repair previous failed installation of $app."
+                    & "$PSScriptRoot\..\libexec\scoop-reset.ps1" $app$(if ($global) { ' --global' })
+                } else {
+                    warn "Purging previous failed installation of $app."
+                    & "$PSScriptRoot\..\libexec\scoop-uninstall.ps1" $app$(if ($global) { ' --global' })
+                }
+            }
         }
     }
 }
@@ -1161,15 +1153,15 @@ function persist_data($manifest, $original_dir, $persist_dir) {
                 if (Test-Path $source) {
                     Move-Item -Force $source "$source.original"
                 }
-            # we don't have persist data in the store, move the source to target, then create link
+                # we don't have persist data in the store, move the source to target, then create link
             } elseif (Test-Path $source) {
                 # ensure target parent folder exist
                 ensure (Split-Path -Path $target) | Out-Null
                 Move-Item $source $target
-            # we don't have neither source nor target data! we need to crate an empty target,
-            # but we can't make a judgement that the data should be a file or directory...
-            # so we create a directory by default. to avoid this, use pre_install
-            # to create the source file before persisting (DON'T use post_install)
+                # we don't have neither source nor target data! we need to crate an empty target,
+                # but we can't make a judgement that the data should be a file or directory...
+                # so we create a directory by default. to avoid this, use pre_install
+                # to create the source file before persisting (DON'T use post_install)
             } else {
                 $target = New-Object System.IO.DirectoryInfo($target)
                 ensure $target | Out-Null
@@ -1178,11 +1170,11 @@ function persist_data($manifest, $original_dir, $persist_dir) {
             # create link
             if (is_directory $target) {
                 # target is a directory, create junction
-                & "$env:COMSPEC" /c "mklink /j `"$source`" `"$target`"" | out-null
+                New-Item -Path $source -ItemType Junction -Value $target | Out-Null
                 attrib $source +R /L
             } else {
                 # target is a file, create hard link
-                & "$env:COMSPEC" /c "mklink /h `"$source`" `"$target`"" | out-null
+                New-Item -Path $source -ItemType HardLink -Value $target | Out-Null
             }
         }
     }
@@ -1199,10 +1191,10 @@ function unlink_persist_data($dir) {
                 # remove read-only attribute on the link
                 attrib -R /L $filepath
                 # remove the junction
-                & "$env:COMSPEC" /c "rmdir /s /q `"$filepath`""
+                Remove-Item -Path $filepath -Recurse -Force -ErrorAction SilentlyContinue
             } else {
                 # remove the hard link
-                & "$env:COMSPEC" /c "del `"$filepath`""
+                Remove-Item -Path $filepath -Force -ErrorAction SilentlyContinue
             }
         }
     }
@@ -1217,5 +1209,23 @@ function persist_permission($manifest, $global) {
         $acl = Get-Acl -Path $path
         $acl.SetAccessRule($target_rule)
         $acl | Set-Acl -Path $path
+    }
+}
+
+# test if there are running processes
+function test_running_process($app, $global) {
+    $processdir = appdir $app $global | Convert-Path
+    $running_processes = Get-Process | Where-Object { $_.Path -like "$processdir\*" }
+
+    if ($running_processes) {
+        if (get_config 'ignore_running_processes') {
+            warn "Application `"$app`" is still running. Scoop is configured to ignore this condition."
+            return $false
+        } else {
+            error "Application `"$app`" is still running. Close all instances and try again."
+            return $true
+        }
+    } else {
+        return $false
     }
 }
