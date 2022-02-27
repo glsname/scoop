@@ -594,18 +594,19 @@ function warn_on_overwrite($shim, $path) {
         return
     } else {
         if (Test-Path -Path "$shim.$path_app" -PathType Leaf) {
-            Remove-Item -Path "$shim.$path_app" -Force
+            Remove-Item -Path "$shim.$path_app" -Force -ErrorAction SilentlyContinue
         }
-        Rename-Item -Path $shim -NewName "$shim.$shim_app"
+        Rename-Item -Path $shim -NewName "$shim.$shim_app" -ErrorAction SilentlyContinue
     }
     $shimname = (fname $shim) -replace '\.shim$', '.exe'
     $filename = (fname $path) -replace '\.shim$', '.exe'
-    warn "Overwriting shim ('$shimname' -> '$filename') installed from $shim_app"
+    warn "Overwriting shim ('$shimname' -> '$filename')$(if ($shim_app) { ' installed from ' + $shim_app })"
 }
 
 function shim($path, $global, $name, $arg) {
     if (!(Test-Path $path)) { abort "Can't shim '$(fname $path)': couldn't find '$path'." }
     $abs_shimdir = ensure (shimdir $global)
+    ensure_in_path $abs_shimdir $global
     if (!$name) { $name = strip_ext (fname $path) }
 
     $shim = "$abs_shimdir\$($name.tolower())"
@@ -620,7 +621,7 @@ function shim($path, $global, $name, $arg) {
         # for programs with no awareness of any shell
         warn_on_overwrite "$shim.shim" $path
         Copy-Item (get_shim_path) "$shim.exe" -Force
-        Write-Output "path = $resolved_path" | Out-File "$shim.shim" -Encoding ASCII
+        Write-Output "path = `"$resolved_path`"" | Out-File "$shim.shim" -Encoding ASCII
         if ($arg) {
             Write-Output "args = $arg" | Out-File "$shim.shim" -Encoding ASCII -Append
         }
@@ -649,11 +650,9 @@ function shim($path, $global, $name, $arg) {
                 "exit `$LASTEXITCODE"
             )
         } else {
-            # Setting PSScriptRoot in Shim if it is not defined, so the shim doesn't break in PowerShell 2.0
             @(
                 "# $resolved_path",
-                "if (!(Test-Path Variable:PSScriptRoot)) { `$PSScriptRoot = Split-Path `$MyInvocation.MyCommand.Path -Parent }",
-                "`$path = Join-Path `"`$PSScriptRoot`" `"$relative_path`"",
+                "`$path = Join-Path `$PSScriptRoot `"$relative_path`"",
                 "if (`$MyInvocation.ExpectingInput) { `$input | & `$path $arg @args } else { & `$path $arg @args }",
                 "exit `$LASTEXITCODE"
             )
@@ -853,12 +852,6 @@ function remove_from_path($dir, $global) {
     # current session
     $was_in_path, $newpath = strip_path $env:PATH $dir
     if($was_in_path) { $env:PATH = $newpath }
-}
-
-function ensure_scoop_in_path($global) {
-    $abs_shimdir = ensure (shimdir $global)
-    # be aggressive (b-e-aggressive) and install scoop first in the path
-    ensure_in_path $abs_shimdir $global
 }
 
 function ensure_robocopy_in_path {

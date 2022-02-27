@@ -5,14 +5,17 @@
 
 - **config:** Allow Scoop to ignore running processes during reset/uninstall/update ([#4713](https://github.com/ScoopInstaller/Scoop/issues/4713), [#4731](https://github.com/ScoopInstaller/Scoop/issues/4731))
 - **scoop-alter:** Add `scoop alter` command to switch shim's target ([#4727](https://github.com/ScoopInstaller/Scoop/issues/4727))
+- **scoop-bucket:** List more detailed information for buckets ([#4704](https://github.com/ScoopInstaller/Scoop/issues/4704))
+- **scoop-cache:** Handle multiple apps and show detailed information ([#4738](https://github.com/ScoopInstaller/Scoop/issues/4738))
+- **scoop-cat:** Use `bat` to pretty-print JSON ([#4742](https://github.com/ScoopInstaller/Scoop/issues/4742))
 - **scoop-download:** Add `scoop download` command ([#4621](https://github.com/ScoopInstaller/Scoop/issues/4621))
 - **scoop-(install|virustotal):** Allow skipping update check ([#4634](https://github.com/ScoopInstaller/Scoop/issues/4634))
-- **scoop-bucket:** List more detailed information for buckets ([#4704](https://github.com/ScoopInstaller/Scoop/pull/4704))
 - **scoop-list:** Allow list manipulation ([#4718](https://github.com/ScoopInstaller/Scoop/issues/4718))
 - **scoop-list:** Show last-updated time [#4723](https://github.com/ScoopInstaller/Scoop/issues/4723))
-- **scoop-cache:** Handle multiple apps and show detailed information ([#4738](https://github.com/ScoopInstaller/Scoop/pull/4738))
-- **scoop-cat:** Use `bat` to pretty-print JSON ([#4742](https://github.com/ScoopInstaller/Scoop/pull/4742))
-- **scoop-info:** Revamp details and show more information ([#4747](https://github.com/ScoopInstaller/Scoop/pull/4747))
+- **scoop-cache:** Handle multiple apps and show detailed information ([#4738](https://github.com/ScoopInstaller/Scoop/issues/4738))
+- **scoop-cat:** Use `bat` to pretty-print JSON ([#4742](https://github.com/ScoopInstaller/Scoop/issues/4742))
+- **scoop-info:** Revamp details and show more information ([#4747](https://github.com/ScoopInstaller/Scoop/issues/4747))
+- **scoop-shim:** Add `scoop shim` to manipulate shims and move `scoop alter` to `scoop shim alter` [#4736](https://github.com/ScoopInstaller/Scoop/issues/4736))
 
 ### Bug Fixes
 
@@ -29,6 +32,7 @@
 - **shim:** Fix PS1 shim error when in different drive in PS7 ([#4614](https://github.com/ScoopInstaller/Scoop/issues/4614))
 - **shim:** Fix `sh` shim error in WSL ([#4637](https://github.com/ScoopInstaller/Scoop/issues/4637))
 - **shim:** Use `-file` instead of `-command` in ps1 script shims ([#4721](https://github.com/ScoopInstaller/Scoop/issues/4721))
+- **shim:** Fix exe shim when app path has white spaces ([#4734](https://github.com/ScoopInstaller/Scoop/issues/4734))
 - **versions:** Fix wrong version number when only one version dir ([#4679](https://github.com/ScoopInstaller/Scoop/issues/4679))
 - **versions:** Get current version from failed installation if possible ([#4720](https://github.com/ScoopInstaller/Scoop/issues/4720), [#4725](https://github.com/ScoopInstaller/Scoop/issues/4725))
 - **scoop-alias:** Fix alias initialization ([#4737](https://github.com/ScoopInstaller/Scoop/issues/4737))
@@ -40,7 +44,7 @@
 
 ### Performance Improvements
 
-- **uninstall:** Avoid checking all files for unlinking persisted data ([#4681](https://github.com/ScoopInstaller/Scoop/issues/4681))
+- **uninstall:** Avoid checking all files for unlinking persisted data ([#4681](https://github.com/ScoopInstaller/Scoop/issues/4681), [#4763](https://github.com/ScoopInstaller/Scoop/issues/4763))
 
 ### Code Refactoring
 
