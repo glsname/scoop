@@ -1,22 +1,18 @@
-<a name="unreleased"></a>
-## [Unreleased]
+## [v0.1.0](https://github.com/ScoopInstaller/Scoop/compare/2021-12-26...v0.1.0) - 2022-03-01
 
 ### Features
 
-- **scoop-config:** Allow Scoop to ignore running processes during reset/uninstall/update ([#4713](https://github.com/ScoopInstaller/Scoop/issues/4713), [#4731](https://github.com/ScoopInstaller/Scoop/issues/4731))
-- **scoop-config:** Show all settings ([#4765](https://github.com/ScoopInstaller/Scoop/issues/4765))
-- **scoop-alter:** Add `scoop alter` command to switch shim's target ([#4727](https://github.com/ScoopInstaller/Scoop/issues/4727))
 - **scoop-bucket:** List more detailed information for buckets ([#4704](https://github.com/ScoopInstaller/Scoop/issues/4704))
 - **scoop-cache:** Handle multiple apps and show detailed information ([#4738](https://github.com/ScoopInstaller/Scoop/issues/4738))
 - **scoop-cat:** Use `bat` to pretty-print JSON ([#4742](https://github.com/ScoopInstaller/Scoop/issues/4742))
+- **scoop-config:** Allow Scoop to ignore running processes during reset/uninstall/update ([#4713](https://github.com/ScoopInstaller/Scoop/issues/4713), [#4731](https://github.com/ScoopInstaller/Scoop/issues/4731))
+- **scoop-config:** Show all settings ([#4765](https://github.com/ScoopInstaller/Scoop/issues/4765))
 - **scoop-download:** Add `scoop download` command ([#4621](https://github.com/ScoopInstaller/Scoop/issues/4621))
 - **scoop-(install|virustotal):** Allow skipping update check ([#4634](https://github.com/ScoopInstaller/Scoop/issues/4634))
 - **scoop-list:** Allow list manipulation ([#4718](https://github.com/ScoopInstaller/Scoop/issues/4718))
-- **scoop-list:** Show last-updated time [#4723](https://github.com/ScoopInstaller/Scoop/issues/4723))
-- **scoop-cache:** Handle multiple apps and show detailed information ([#4738](https://github.com/ScoopInstaller/Scoop/issues/4738))
-- **scoop-cat:** Use `bat` to pretty-print JSON ([#4742](https://github.com/ScoopInstaller/Scoop/issues/4742))
+- **scoop-list:** Show last-updated time ([#4723](https://github.com/ScoopInstaller/Scoop/issues/4723))
 - **scoop-info:** Revamp details and show more information ([#4747](https://github.com/ScoopInstaller/Scoop/issues/4747))
-- **scoop-shim:** Add `scoop shim` to manipulate shims and move `scoop alter` to `scoop shim alter` [#4736](https://github.com/ScoopInstaller/Scoop/issues/4736))
+- **scoop-shim:** Add `scoop shim` to manipulate shims ([#4727](https://github.com/ScoopInstaller/Scoop/issues/4727), [#4736](https://github.com/ScoopInstaller/Scoop/issues/4736))
 
 ### Bug Fixes
 
@@ -65,6 +61,7 @@
 - **schema:** Fix typo ('note' -> 'notes') ([#4678](https://github.com/ScoopInstaller/Scoop/issues/4678))
 - **tests:** Support both AppVeyor and GitHub Actions ([#4655](https://github.com/ScoopInstaller/Scoop/issues/4655))
 - **tests:** Run GitHub Actions CI on each commit ([#4664](https://github.com/ScoopInstaller/Scoop/issues/4664))
+- **tests:** Use cache in GitHub Actions ([#4671](https://github.com/ScoopInstaller/Scoop/issues/4671))
 - **tests:** Disable CI test on 'push' ([#4677](https://github.com/ScoopInstaller/Scoop/issues/4677))
 - **vscode-settings:** Remove 'formatOnSave' trigger ([#4635](https://github.com/ScoopInstaller/Scoop/issues/4635))
 
@@ -84,7 +81,7 @@
 - **changelog:** Rearrange CHANGELOG ([#4729](https://github.com/ScoopInstaller/Scoop/issues/4729))
 - **changelog:** Link CHANGELOG headers to 'releases/tag' ([#4730](https://github.com/ScoopInstaller/Scoop/issues/4730))
 
-## [2021-12-26](https://github.com/ScoopInstaller/Scoop/releases/tag/2021-12-26)
+## [2021-12-26](https://github.com/ScoopInstaller/Scoop/compare/2021-11-22...2021-12-26)
 
 ### Features
 
@@ -128,7 +125,7 @@
 
 - **shim:** Revert [#4229](https://github.com/ScoopInstaller/Scoop/issues/4229) ([#4553](https://github.com/ScoopInstaller/Scoop/issues/4553))
 
-## [2021-11-22](https://github.com/ScoopInstaller/Scoop/releases/tag/2021-11-22)
+## [2021-11-22](https://github.com/ScoopInstaller/Scoop/compare/2020-11-26...2021-11-22)
 
 ### Features
 
@@ -167,13 +164,13 @@
 - **readme:** Update Java bucket text ([#4514](https://github.com/ScoopInstaller/Scoop/issues/4514))
 - **readme:** Update notes about the NirSoft bucket ([#4524](https://github.com/ScoopInstaller/Scoop/issues/4524))
 
-## [2020-11-26](https://github.com/ScoopInstaller/Scoop/releases/tag/2020-11-26)
+## [2020-11-26](https://github.com/ScoopInstaller/Scoop/compare/2020-10-22...2020-11-26)
 
 ### Bug Fixes
 
 - **shim:** Fix Makefile typo ([0948824e](https://github.com/ScoopInstaller/Scoop/commit/0948824ec7269c979882d09342d9a269193cd674)) ([227de6cf](https://github.com/ScoopInstaller/Scoop/commit/227de6cfb8433a86ac0f0a279e691327ae04554c))
 
-## [2020-10-22](https://github.com/ScoopInstaller/Scoop/releases/tag/2020-10-22)
+## [2020-10-22](https://github.com/ScoopInstaller/Scoop/compare/2019-10-23...2020-10-22)
 
 ### Features
 
@@ -209,7 +206,7 @@
 
 - **init:** Force pester v4 ([#4040](https://github.com/ScoopInstaller/Scoop/issues/4040))
 
-## [2019-10-23](https://github.com/ScoopInstaller/Scoop/releases/tag/2019-10-23)
+## [2019-10-23](https://github.com/ScoopInstaller/Scoop/compare/2019-10-18...2019-10-23)
 
 ### Features
 
@@ -222,7 +219,7 @@
 - **install:** Check execution policy ([#3619](https://github.com/ScoopInstaller/Scoop/issues/3619))
 - **update:** Fix scoop update changelog output ([e997017f](https://github.com/ScoopInstaller/Scoop/commit/e997017f1a03e2eefef2157acdfefe2e4fced896))
 
-## [2019-10-18](https://github.com/ScoopInstaller/Scoop/releases/tag/2019-10-18)
+## [2019-10-18](https://github.com/ScoopInstaller/Scoop/compare/2019-06-24...2019-10-18)
 
 ### Features
 
@@ -261,7 +258,7 @@
 
 - **readme:** Improve installation instructions ([#3600](https://github.com/ScoopInstaller/Scoop/issues/3600))
 
-## [2019-06-24](https://github.com/ScoopInstaller/Scoop/releases/tag/2019-06-24)
+## [2019-06-24](https://github.com/ScoopInstaller/Scoop/compare/2019-05-15...2019-06-24)
 
 ### Features
 
@@ -291,7 +288,7 @@
 - **readme:** Fix typo in readme ([03bb07c8](https://github.com/ScoopInstaller/Scoop/commit/03bb07c8231563fa3a2092b9b52d4dde372f2a8e))
 - **readme:** Update readme with correct count of nirsoft apps ([e8d0be66](https://github.com/ScoopInstaller/Scoop/commit/e8d0be663b3bab25d9ee55c597b90bf922f4ec5d))
 
-## [2019-05-15](https://github.com/ScoopInstaller/Scoop/releases/tag/2019-05-15)
+## [2019-05-15](https://github.com/ScoopInstaller/Scoop/compare/2019-05-12...2019-05-15)
 
 ### Features
 
