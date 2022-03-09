@@ -121,7 +121,7 @@ function update_scoop() {
 
     # This should have been deprecated after 2019-05-12
     # if ((Get-LocalBucket) -notcontains 'main') {
-    #     info "The main bucket of Scoop has been separated to 'https://gitee.com/glsnames/scoop-main'"
+    #     info "The main bucket of Scoop has been separated to 'https://gitee.com/glsnames/scoop-base'"
     #     info "Adding main bucket..."
     #     add_bucket 'main'
     # }
