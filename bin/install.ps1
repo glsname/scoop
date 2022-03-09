@@ -41,7 +41,7 @@ if (Get-Command -Name 'scoop' -ErrorAction SilentlyContinue) {
 $dir = ensure (versiondir 'scoop' 'current')
 
 # download scoop zip
-$zipurl = 'https://scoop.glimmer.ltd/zip/scoop-install-master.zip'
+$zipurl = 'https://scoop.glimmer.ltd/zip/scoop-installer-master.zip'
 $zipfile = "$dir\scoop.zip"
 Write-Output 'Downloading scoop...'
 dl $zipurl $zipfile
