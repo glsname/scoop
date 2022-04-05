@@ -7,6 +7,8 @@ param($app)
 . "$PSScriptRoot\..\lib\install.ps1"
 . "$PSScriptRoot\..\lib\help.ps1"
 
+reset_aliases
+
 if (!$app) { error '<app> missing'; my_usage; exit 1 }
 
 $app, $bucket, $null = parse_app $app

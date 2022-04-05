@@ -12,6 +12,7 @@
 . "$PSScriptRoot\..\lib\versions.ps1"
 . "$PSScriptRoot\..\lib\shortcuts.ps1"
 
+reset_aliases
 $opt, $apps, $err = getopt $args
 if($err) { "scoop reset: $err"; exit 1 }
 

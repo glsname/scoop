@@ -7,6 +7,7 @@
 . "$PSScriptRoot\..\lib\manifest.ps1"
 . "$PSScriptRoot\..\lib\buckets.ps1"
 
+reset_aliases
 $def_arch = default_architecture
 
 $local = installed_apps $false | ForEach-Object { @{ name = $_; global = $false } }

@@ -10,6 +10,8 @@ param($query)
 . "$PSScriptRoot\..\lib\manifest.ps1"
 . "$PSScriptRoot\..\lib\versions.ps1"
 
+reset_aliases
+
 function bin_match($manifest, $query) {
     if(!$manifest.bin) { return $false }
     foreach($bin in $manifest.bin) {
