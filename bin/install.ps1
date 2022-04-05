@@ -33,7 +33,7 @@ Write-Output 'Initializing...'
 Invoke-Expression (new-object net.webclient).downloadstring($core_url)
 
 # prep
-if (installed 'scoop') {
+if (Get-Command -Name 'scoop' -ErrorAction SilentlyContinue) {
     write-host "Scoop is already installed. Run 'scoop update' to get the latest version." -f red
     # don't abort if invoked with iex that would close the PS session
     if ($myinvocation.mycommand.commandtype -eq 'Script') { return } else { exit 1 }
@@ -41,7 +41,7 @@ if (installed 'scoop') {
 $dir = ensure (versiondir 'scoop' 'current')
 
 # download scoop zip
-$zipurl = 'http://173.82.155.228:9012/chfs/shared/public/scoop-install-master.zip'
+$zipurl = 'https://scoop.glimmer.ltd/zip/scoop-installer-master.zip'
 $zipfile = "$dir\scoop.zip"
 Write-Output 'Downloading scoop...'
 dl $zipurl $zipfile
@@ -57,7 +57,7 @@ shim "$dir\bin\scoop.ps1" $false
 
 # download main bucket
 $dir = "$scoopdir\buckets\main"
-$zipurl = 'http://173.82.155.228:9012/chfs/shared/public/scoop-main-master.zip'
+$zipurl = 'https://scoop.glimmer.ltd/zip/scoop-main-master.zip'
 $zipfile = "$dir\main-bucket.zip"
 Write-Output 'Downloading main bucket...'
 New-Item $dir -Type Directory -Force | Out-Null

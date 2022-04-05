@@ -1,3 +1,37 @@
+## [Unreleased](https://github.com/ScoopInstaller/Scoop/compare/master...develop)
+
+### Features
+
+- **install:** Allow downloading from private repositories ([#4254](https://github.com/ScoopInstaller/Scoop/issues/4243))
+
+### Bug Fixes
+
+- **shim:** Manipulating shims with UTF8 encoding ([#4791](https://github.com/ScoopInstaller/Scoop/issues/4791), [#4813](https://github.com/ScoopInstaller/Scoop/issues/4813))
+- **shim:** Correctly quote $@ in sh->ps1 shims ([#4808](https://github.com/ScoopInstaller/Scoop/issues/4808))
+- **installed:** If no `$global`, check both local and global installed ([#4798](https://github.com/ScoopInstaller/Scoop/issues/4798))
+- **scoop-prefix:** Fix typo that breaks global installed apps ([#4795](https://github.com/ScoopInstaller/Scoop/issues/4795))
+- **update:** Skip logs starting with `(chore)` ([#4800](https://github.com/ScoopInstaller/Scoop/issues/4800))
+- **scoop-download:** Add failure check ([#4822](https://github.com/ScoopInstaller/Scoop/pull/4822))
+- **install:** Fix issue with installation inside containers ([#4837](https://github.com/ScoopInstaller/Scoop/pull/4837))
+
+### Code Refactoring
+
+- **bucket:** Move 'Find-Manifest' and 'list_buckets' to 'buckets' ([#4814](https://github.com/ScoopInstaller/Scoop/issues/4814))
+- **relpath:** Use `$PSScriptRoot` instead of `relpath` ([#4793](https://github.com/ScoopInstaller/Scoop/issues/4793))
+- **reset_aliases:** Move core function of `reset_aliases` to `scoop` ([#4794](https://github.com/ScoopInstaller/Scoop/issues/4794))
+- **config:** Rename checkver_token to gh_token and SCOOP_CHECKVER_TOKEN to SCOOP_GH_TOKEN ([#4832](https://github.com/ScoopInstaller/Scoop/pull/4832))
+- **config:** try SCOOP_GH_TOKEN value first before gh_token value from config ([#4842](https://github.com/ScoopInstaller/Scoop/pull/4842))
+
+### Builds
+
+- **schema:** Remove 'description' from required fields ([#4853](https://github.com/ScoopInstaller/Scoop/issues/4853))
+
+### Documentation
+
+- **readme:** Update installation instruction ([#4825](https://github.com/ScoopInstaller/Scoop/issues/4825))
+- **readme:** Fix badges for Gitter and CI Tests ([#4830](https://github.com/ScoopInstaller/Scoop/issues/4830))
+- **scoop-shim:**: Fix typo ([#4836](https://github.com/ScoopInstaller/Scoop/issues/4836))
+
 ## [v0.1.0](https://github.com/ScoopInstaller/Scoop/compare/2021-12-26...v0.1.0) - 2022-03-01
 
 ### Features
@@ -25,17 +59,18 @@
 - **depends:** Prevent error on no URL ([#4595](https://github.com/ScoopInstaller/Scoop/issues/4595))
 - **depends:** Check if extractor is available ([#4042](https://github.com/ScoopInstaller/Scoop/issues/4042))
 - **decompress:** Fix nested Zstd archive extraction ([#4608](https://github.com/ScoopInstaller/Scoop/issues/4608), [#4639](https://github.com/ScoopInstaller/Scoop/issues/4639))
-- **installed:** Fix 'core/installed' that mark failed app as 'installed' ([#4650](https://github.com/ScoopInstaller/Scoop/issues/4650), [#4676](https://github.com/ScoopInstaller/Scoop/issues/4676), [#4689](https://github.com/ScoopInstaller/Scoop/issues/4689))
+- **installed:** Fix 'core/installed' that mark failed app as 'installed' ([#4650](https://github.com/ScoopInstaller/Scoop/issues/4650), [#4676](https://github.com/ScoopInstaller/Scoop/issues/4676), [#4689](https://github.com/ScoopInstaller/Scoop/issues/4689), [#4785](https://github.com/ScoopInstaller/Scoop/issues/4785))
 - **no-junctions:** Fix error when `NO_JUNCTIONS` is been set ([#4722](https://github.com/ScoopInstaller/Scoop/issues/4722), [#4726](https://github.com/ScoopInstaller/Scoop/issues/4726))
 - **shim:** Fix PS1 shim error when in different drive in PS7 ([#4614](https://github.com/ScoopInstaller/Scoop/issues/4614))
 - **shim:** Fix `sh` shim error in WSL ([#4637](https://github.com/ScoopInstaller/Scoop/issues/4637))
 - **shim:** Use `-file` instead of `-command` in ps1 script shims ([#4721](https://github.com/ScoopInstaller/Scoop/issues/4721))
-- **shim:** Fix exe shim when app path has white spaces ([#4734](https://github.com/ScoopInstaller/Scoop/issues/4734))
+- **shim:** Fix exe shim when app path has white spaces ([#4734](https://github.com/ScoopInstaller/Scoop/issues/4734), [#4780](https://github.com/ScoopInstaller/Scoop/issues/4780))
 - **versions:** Fix wrong version number when only one version dir ([#4679](https://github.com/ScoopInstaller/Scoop/issues/4679))
 - **versions:** Get current version from failed installation if possible ([#4720](https://github.com/ScoopInstaller/Scoop/issues/4720), [#4725](https://github.com/ScoopInstaller/Scoop/issues/4725))
 - **scoop-alias:** Fix alias initialization ([#4737](https://github.com/ScoopInstaller/Scoop/issues/4737))
 - **scoop-checkup:** Skip 'check_windows_defender' when have not admin privileges ([#4699](https://github.com/ScoopInstaller/Scoop/issues/4699))
 - **scoop-cleanup:** Remove apps other than current version ([#4665](https://github.com/ScoopInstaller/Scoop/issues/4665))
+- **scoop-search:** Remove redundant 'bucket/' in search result ([#4773](https://github.com/ScoopInstaller/Scoop/issues/4773))
 - **scoop-update:** Skip updating non git buckets ([#4670](https://github.com/ScoopInstaller/Scoop/issues/4670), [#4672](https://github.com/ScoopInstaller/Scoop/issues/4672))
 
 ### Performance Improvements
