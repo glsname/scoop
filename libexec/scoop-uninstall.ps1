@@ -15,6 +15,8 @@
 . "$PSScriptRoot\..\lib\versions.ps1"
 . "$PSScriptRoot\..\lib\getopt.ps1"
 
+reset_aliases
+
 # options
 $opt, $apps, $err = getopt $args 'gp' 'global', 'purge'
 

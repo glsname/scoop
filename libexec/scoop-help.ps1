@@ -6,6 +6,8 @@ param($cmd)
 . "$PSScriptRoot\..\lib\commands.ps1"
 . "$PSScriptRoot\..\lib\help.ps1"
 
+reset_aliases
+
 function print_help($cmd) {
     $file = Get-Content (command_path $cmd) -raw
 
@@ -45,3 +47,4 @@ Some useful commands are:"
 }
 
 exit 0
+

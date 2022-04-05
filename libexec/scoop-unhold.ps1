@@ -5,6 +5,7 @@
 . "$PSScriptRoot\..\lib\manifest.ps1"
 . "$PSScriptRoot\..\lib\versions.ps1"
 
+reset_aliases
 $apps = $args
 
 if(!$apps) {

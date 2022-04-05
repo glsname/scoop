@@ -1,6 +1,6 @@
 
 VER?=2.2.1
-ZIP=shimexe.zip
+ZIP=shimexe-$(VER).zip
 URL?=https://github.com/kiennq/scoop-better-shimexe/releases/download/$(VER)/$(ZIP)
 LATEST_URL?=https://github.com/kiennq/scoop-better-shimexe/releases/latest
 NEWVER=$(shell cat version.txt)

@@ -1,6 +1,7 @@
 function command_files {
-    (Get-ChildItem "$PSScriptRoot\..\libexec") + (Get-ChildItem "$scoopdir\shims") |
-        Where-Object 'scoop-.*?\.ps1$' -Property Name -Match
+    (Get-ChildItem (relpath '..\libexec')) `
+        + (Get-ChildItem "$scoopdir\shims") `
+        | Where-Object { $_.name -match 'scoop-.*?\.ps1$' }
 }
 
 function commands {
@@ -12,7 +13,7 @@ function command_name($filename) {
 }
 
 function command_path($cmd) {
-    $cmd_path = "$PSScriptRoot\..\libexec\scoop-$cmd.ps1"
+    $cmd_path = relpath "..\libexec\scoop-$cmd.ps1"
 
     # built in commands
     if (!(Test-Path $cmd_path)) {

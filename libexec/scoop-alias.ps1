@@ -58,7 +58,7 @@ function add_alias($name, $command) {
 # Summary: $description
 $command
 "@
-    $script | Out-UTF8File "$shimdir\$alias_file.ps1"
+    $script | Out-File "$shimdir\$alias_file.ps1" -Encoding ASCII
 
     # add alias to config
     $aliases | Add-Member -MemberType NoteProperty -Name $name -Value $alias_file

@@ -7,20 +7,19 @@ param($app)
 . "$PSScriptRoot\..\lib\manifest.ps1"
 . "$PSScriptRoot\..\lib\buckets.ps1"
 
-if ($app) {
-    $null, $manifest, $bucket, $null = Find-Manifest $app
-    if ($manifest) {
-        if ($manifest.homepage) {
-            Start-Process $manifest.homepage
-        } else {
+reset_aliases
+
+if($app) {
+    $manifest, $bucket = find_manifest $app
+    if($manifest) {
+        if([string]::isnullorempty($manifest.homepage)) {
             abort "Could not find homepage in manifest for '$app'."
         }
-    } else {
+        Start-Process $manifest.homepage
+    }
+    else {
         abort "Could not find manifest for '$app'."
     }
-} else {
-    my_usage
-    exit 1
-}
+} else { my_usage }
 
 exit 0
