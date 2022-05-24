@@ -133,15 +133,9 @@ function update_scoop() {
         if (!(Test-Path (Join-Path $bucketLoc '.git'))) {
             if ($bucket -eq 'main') {
                 # Make sure main bucket, which was downloaded as zip, will be properly "converted" into git
-                Write-Host " Converting 'main' bucket to git repo..."
-                $status = rm_bucket 'main'
-                if ($status -ne 0) {
-                    abort "Failed to remove local 'main' bucket."
-                }
-                $status = add_bucket 'main' (known_bucket_repo 'main')
-                if ($status -ne 0) {
-                    abort "Failed to add remote 'main' bucket."
-                }
+                Write-Host " Converting 'main' bucket to git..."
+                rm_bucket 'main'
+                add_bucket 'main'
             } else {
                 Write-Host "'$bucket' is not a git repository. Skipped."
             }
