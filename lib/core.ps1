@@ -16,7 +16,7 @@ function Optimize-SecurityProtocol {
 }
 
 function Get-UserAgent() {
-    return "Scoop/1.0 (+https://gitee.com/glsnames/scoop-installer/) PowerShell/$($PSVersionTable.PSVersion.Major).$($PSVersionTable.PSVersion.Minor) (Windows NT $([System.Environment]::OSVersion.Version.Major).$([System.Environment]::OSVersion.Version.Minor); $(if($env:PROCESSOR_ARCHITECTURE -eq 'AMD64'){'Win64; x64; '})$(if($env:PROCESSOR_ARCHITEW6432 -eq 'AMD64'){'WOW64; '})$PSEdition)"
+    return "Scoop/1.0 (+https://glimmer.coding.net/public/scoop/scoopInstaller/git/files) PowerShell/$($PSVersionTable.PSVersion.Major).$($PSVersionTable.PSVersion.Minor) (Windows NT $([System.Environment]::OSVersion.Version.Major).$([System.Environment]::OSVersion.Version.Minor); $(if($env:PROCESSOR_ARCHITECTURE -eq 'AMD64'){'Win64; x64; '})$(if($env:PROCESSOR_ARCHITEW6432 -eq 'AMD64'){'WOW64; '})$PSEdition)"
 }
 
 function Show-DeprecatedWarning {
@@ -679,11 +679,19 @@ function shim($path, $global, $name, $arg) {
         @(
             "@rem $resolved_path",
             "@echo off",
+            "setlocal enabledelayedexpansion",
+            "set args=%*",
+            ":: replace problem characters in arguments",
+            "set args=%args:`"='%",
+            "set args=%args:(=``(%",
+            "set args=%args:)=``)%",
+            "set invalid=`"='",
+            "if !args! == !invalid! ( set args= )",
             "where /q pwsh.exe",
             "if %errorlevel% equ 0 (",
-            "    pwsh -noprofile -ex unrestricted -file `"$resolved_path`" $arg %*",
+            "    pwsh -noprofile -ex unrestricted -file `"$resolved_path`" $arg %args%",
             ") else (",
-            "    powershell -noprofile -ex unrestricted -file `"$resolved_path`" $arg %*",
+            "    powershell -noprofile -ex unrestricted -file `"$resolved_path`" $arg %args%",
             ")"
         ) -join "`r`n" | Out-UTF8File "$shim.cmd"
 
@@ -1101,19 +1109,6 @@ function Out-UTF8File {
 #       for all communication with api.github.com
 Optimize-SecurityProtocol
 
-# Scoop config file migration
-$configHome = $env:XDG_CONFIG_HOME, "$env:USERPROFILE\.config" | Select-Object -First 1
-$configFile = "$configHome\scoop\config.json"
-if ((Test-Path "$env:USERPROFILE\.scoop") -and !(Test-Path $configFile)) {
-    New-Item -ItemType Directory (Split-Path -Path $configFile) -ErrorAction Ignore | Out-Null
-    Move-Item "$env:USERPROFILE\.scoop" $configFile
-    write-host "WARN  Scoop configuration has been migrated from '~/.scoop'" -f darkyellow
-    write-host "WARN  to '$configFile'" -f darkyellow
-}
-
-# Load Scoop config
-$scoopConfig = load_cfg $configFile
-
 # Scoop root directory
 $scoopdir = $env:SCOOP, (get_config 'rootPath'), "$env:USERPROFILE\scoop" | Where-Object { -not [String]::IsNullOrEmpty($_) } | Select-Object -First 1
 
@@ -1126,6 +1121,19 @@ $globaldir = $env:SCOOP_GLOBAL, (get_config 'globalPath'), "$env:ProgramData\sco
 #       multiple users write and access cached files at the same time.
 #       Use at your own risk.
 $cachedir = $env:SCOOP_CACHE, (get_config 'cachePath'), "$scoopdir\cache" | Where-Object { -not [String]::IsNullOrEmpty($_) } | Select-Object -first 1
+
+# Scoop config file migration
+$configHome = $env:XDG_CONFIG_HOME, "$env:USERPROFILE\.config" | Select-Object -First 1
+$configFile = "$configHome\scoop\config.json"
+if ((Test-Path "$env:USERPROFILE\.scoop") -and !(Test-Path $configFile)) {
+    New-Item -ItemType Directory (Split-Path -Path $configFile) -ErrorAction Ignore | Out-Null
+    Move-Item "$env:USERPROFILE\.scoop" $configFile
+    write-host "WARN  Scoop configuration has been migrated from '~/.scoop'" -f darkyellow
+    write-host "WARN  to '$configFile'" -f darkyellow
+}
+
+# Load Scoop config
+$scoopConfig = load_cfg $configFile
 
 # Setup proxy globally
 setup_proxy
