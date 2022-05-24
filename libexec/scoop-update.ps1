@@ -37,7 +37,7 @@ $all = $opt.a -or $opt.all
 # load config
 $configRepo = get_config SCOOP_REPO
 if (!$configRepo) {
-    $configRepo = "https://gitee.com/glsnames/scoop-installer"
+    $configRepo = "https://e.coding.net/glimmer/scoop/scoopInstaller"
     set_config SCOOP_REPO $configRepo | Out-Null
 }
 
@@ -118,7 +118,7 @@ function update_scoop() {
 
     # This should have been deprecated after 2019-05-12
     # if ((Get-LocalBucket) -notcontains 'main') {
-    #     info "The main bucket of Scoop has been separated to 'https://gitee.com/glsnames/scoop-base'"
+    #     info "The main bucket of Scoop has been separated to 'https://e.coding.net/glimmer/scoop/ScoopBase'"
     #     info "Adding main bucket..."
     #     add_bucket 'main'
     # }
@@ -133,9 +133,15 @@ function update_scoop() {
         if (!(Test-Path (Join-Path $bucketLoc '.git'))) {
             if ($bucket -eq 'main') {
                 # Make sure main bucket, which was downloaded as zip, will be properly "converted" into git
-                Write-Host " Converting 'main' bucket to git..."
-                rm_bucket 'main'
-                add_bucket 'main'
+                Write-Host " Converting 'main' bucket to git repo..."
+                $status = rm_bucket 'main'
+                if ($status -ne 0) {
+                    abort "Failed to remove local 'main' bucket."
+                }
+                $status = add_bucket 'main' (known_bucket_repo 'main')
+                if ($status -ne 0) {
+                    abort "Failed to add remote 'main' bucket."
+                }
             } else {
                 Write-Host "'$bucket' is not a git repository. Skipped."
             }
@@ -189,7 +195,7 @@ function update($app, $global, $quiet = $false, $independent, $suggested, $use_c
     Write-Host "Updating '$app' ($old_version -> $version)"
 
     # region Workaround
-    # Workaround for https://gitee.com/glsnames/scoop-installer/issues/2220 until install is refactored
+    # Workaround for https://e.coding.net/glimmer/scoop/scoopInstaller/issues/2220 until install is refactored
     # Remove and replace whole region after proper fix
     Write-Host "Downloading new version"
     if (Test-Aria2Enabled) {

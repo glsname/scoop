@@ -1,5 +1,5 @@
 {
-    "main": "https://gitee.com/glsnames/scoop-base",
+    "main": "https://e.coding.net/glimmer/scoop/ScoopBase",
     "extras": "https://github.com/ScoopInstaller/Extras",
     "versions": "https://github.com/ScoopInstaller/Versions",
     "nirsoft": "https://github.com/kodybrown/scoop-nirsoft",

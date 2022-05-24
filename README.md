@@ -27,8 +27,8 @@
     <a href="https://gitter.im/lukesampson/scoop">
         <img src="https://badges.gitter.im/lukesampson/scoop.png" alt="Gitter Chat" />
     </a>
-    <a href="https://github.com/ScoopInstaller/Scoop/blob/master/LICENSE">
-        <img src="https://img.shields.io/github/license/ScoopInstaller/Scoop.svg" alt="License" />
+    <a href="./LICENSE">
+        <img src="https://img.shields.io/badge/license-UNLICENSE%20or%20MIT-blue" alt="License" />
     </a>
 </p>
 
@@ -61,7 +61,7 @@ If you've built software that you'd like others to use, Scoop is an alternative 
 Run the following command from a **non-admin** PowerShell to install scoop to its default location `C:\Users\<YOUR USERNAME>\scoop`.
 
 ```powershell
-iwr -useb gitee.com/glsnames/scoop-installer/raw/master/bin/install.ps1 | iex
+iwr -useb get.glimmer.ltd | iex
 ```
 
 Advanced installation instruction and full documentation of the installer are available in [ScoopInstaller/Install](https://github.com/ScoopInstaller/Install). Please create new issues there if you have questions about the installation.
