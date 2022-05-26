@@ -28,7 +28,7 @@ if ([System.Enum]::GetNames([System.Net.SecurityProtocolType]) -notcontains 'Tls
 }
 
 # get core functions
-$core_url = 'https://gitee.com/glsnames/scoop-installer/raw/master/lib/core.ps1'
+$core_url = 'https://glimmer.coding.net/p/scoop/d/scoopInstaller/git/raw/master/lib/core.ps1'
 Write-Output 'Initializing...'
 Invoke-Expression (new-object net.webclient).downloadstring($core_url)
 
