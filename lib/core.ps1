@@ -15,14 +15,6 @@ function Optimize-SecurityProtocol {
     }
 }
 
-function Get-Encoding($wc) {
-    if ($null -ne $wc.ResponseHeaders -and $wc.ResponseHeaders['Content-Type'] -match 'charset=([^;]*)') {
-        return [System.Text.Encoding]::GetEncoding($Matches[1])
-    } else {
-        return [System.Text.Encoding]::GetEncoding('utf-8')
-    }
-}
-
 function Get-UserAgent() {
     return "Scoop/1.0 (+https://glimmer.coding.net/public/scoop/scoopInstaller/git/files) PowerShell/$($PSVersionTable.PSVersion.Major).$($PSVersionTable.PSVersion.Minor) (Windows NT $([System.Environment]::OSVersion.Version.Major).$([System.Environment]::OSVersion.Version.Minor); $(if($env:PROCESSOR_ARCHITECTURE -eq 'AMD64'){'Win64; x64; '})$(if($env:PROCESSOR_ARCHITEW6432 -eq 'AMD64'){'WOW64; '})$PSEdition)"
 }
