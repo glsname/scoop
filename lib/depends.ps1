@@ -32,7 +32,7 @@ function Get-Dependency {
         $Unresolved = @()
     )
     process {
-        $AppName, $manifest, $bucket, $url = Get-Manifest $AppName
+        $AppName, $manifest, $bucket, $null = Get-Manifest $AppName
         $Unresolved += $AppName
 
         if (!$manifest) {
@@ -57,11 +57,7 @@ function Get-Dependency {
         if ($bucket) {
             $Resolved += "$bucket/$AppName"
         } else {
-            if ($url) {
-                $Resolved += $url
-            } else {
-                $Resolved += $AppName
-            }
+            $Resolved += $AppName
         }
         if ($Unresolved.Length -eq 0) {
             return $Resolved
