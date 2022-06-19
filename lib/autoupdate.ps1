@@ -1,13 +1,12 @@
 # Must included with 'json.ps1'
 function find_hash_in_rdf([String] $url, [String] $basename) {
-    $xml = $null
+    $data = $null
     try {
         # Download and parse RDF XML file
         $wc = New-Object Net.Webclient
         $wc.Headers.Add('Referer', (strip_filename $url))
         $wc.Headers.Add('User-Agent', (Get-UserAgent))
-        $data = $wc.DownloadData($url)
-        [xml]$xml = (Get-Encoding($wc)).GetString($data)
+        [xml]$data = $wc.downloadstring($url)
     } catch [system.net.webexception] {
         write-host -f darkred $_
         write-host -f darkred "URL $url is not valid"
@@ -15,7 +14,7 @@ function find_hash_in_rdf([String] $url, [String] $basename) {
     }
 
     # Find file content
-    $digest = $xml.RDF.Content | Where-Object { [String]$_.about -eq $basename }
+    $digest = $data.RDF.Content | Where-Object { [String]$_.about -eq $basename }
 
     return format_hash $digest.sha256
 }
@@ -36,8 +35,7 @@ function find_hash_in_textfile([String] $url, [Hashtable] $substitutions, [Strin
         $wc = New-Object Net.Webclient
         $wc.Headers.Add('Referer', (strip_filename $url))
         $wc.Headers.Add('User-Agent', (Get-UserAgent))
-        $data = $wc.DownloadData($url)
-        $hashfile = (Get-Encoding($wc)).GetString($data)
+        $hashfile = $wc.downloadstring($url)
     } catch [system.net.webexception] {
         write-host -f darkred $_
         write-host -f darkred "URL $url is not valid"
@@ -90,8 +88,7 @@ function find_hash_in_json([String] $url, [Hashtable] $substitutions, [String] $
         $wc = New-Object Net.Webclient
         $wc.Headers.Add('Referer', (strip_filename $url))
         $wc.Headers.Add('User-Agent', (Get-UserAgent))
-        $data = $wc.DownloadData($url)
-        $json = (Get-Encoding($wc)).GetString($data)
+        $json = $wc.downloadstring($url)
     } catch [system.net.webexception] {
         write-host -f darkred $_
         write-host -f darkred "URL $url is not valid"
@@ -111,8 +108,7 @@ function find_hash_in_xml([String] $url, [Hashtable] $substitutions, [String] $x
         $wc = New-Object Net.Webclient
         $wc.Headers.Add('Referer', (strip_filename $url))
         $wc.Headers.Add('User-Agent', (Get-UserAgent))
-        $data = $wc.DownloadData($url)
-        $xml = [xml]((Get-Encoding($wc)).GetString($data))
+        $xml = [xml]$wc.downloadstring($url)
     } catch [system.net.webexception] {
         write-host -f darkred $_
         write-host -f darkred "URL $url is not valid"
