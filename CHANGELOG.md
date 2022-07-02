@@ -17,6 +17,12 @@
 
 - **scoop-search:** Output PSObject, use API token ([#4997](https://github.com/ScoopInstaller/Scoop/issues/4997))
 
+### Builds
+
+- **checkver,auto-pr:** Allow passing file path ([#5019](https://github.com/ScoopInstaller/Scoop/issues/5019))
+- **checkver:** Exit routine earlier if error ([#5025](https://github.com/ScoopInstaller/Scoop/issues/5025))
+- **json:** Update Newton.Json to 13.0.1 ([#5026](https://github.com/ScoopInstaller/Scoop/issues/5026))
+
 ### Tests
 
 - **typo:** Fix typo ('formated' -> 'formatted') ([#4217](https://github.com/ScoopInstaller/Scoop/issues/4217))
