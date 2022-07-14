@@ -1,17 +1,17 @@
-## [Unreleased](https://github.com/ScoopInstaller/Scoop/compare/master...develop)
+## [v0.2.3](https://github.com/ScoopInstaller/Scoop/compare/v0.2.2...v0.2.3) - 2022-07-07
 
 ### Features
 
 - **chore:** Add missing -a/--all param to all commands ([#5004](https://github.com/ScoopInstaller/Scoop/issues/5004))
 - **scoop-status:** Check bucket status, improve output ([#5011](https://github.com/ScoopInstaller/Scoop/issues/5011))
 - **scoop-info:** Show app installed/download size ([#4886](https://github.com/ScoopInstaller/Scoop/issues/4886))
-- **scoop-import:** Import a Scoop installation from JSON ([#5014](https://github.com/ScoopInstaller/Scoop/issues/5014))
+- **scoop-import:** Import a Scoop installation from JSON ([#5014](https://github.com/ScoopInstaller/Scoop/issues/5014), [#5034](https://github.com/ScoopInstaller/Scoop/issues/5034))
 
 ### Bug Fixes
 
-- **chore:** Update help documentation ([#5002](https://github.com/ScoopInstaller/Scoop/issues/5002))
+- **chore:** Update help documentation ([#5002](https://github.com/ScoopInstaller/Scoop/issues/5002), [#5029](https://github.com/ScoopInstaller/Scoop/issues/5029))
 - **decompress:** Handle split RAR archives ([#4994](https://github.com/ScoopInstaller/Scoop/issues/4994))
-- **shortcuts:** Fix network drive shortcut creation ([#4410](https://github.com/ScoopInstaller/Scoop/issues/4410)), ([#5006](https://github.com/ScoopInstaller/Scoop/issues/5006))
+- **shortcuts:** Fix network drive shortcut creation ([#4410](https://github.com/ScoopInstaller/Scoop/issues/4410), [#5006](https://github.com/ScoopInstaller/Scoop/issues/5006))
 
 ### Code Refactoring
 
