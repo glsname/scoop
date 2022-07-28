@@ -37,7 +37,7 @@ $all = $opt.a -or $opt.all
 # load config
 $configRepo = get_config SCOOP_REPO
 if (!$configRepo) {
-    $configRepo = "https://e.coding.net/glimmer/scoop/scoopInstaller"
+    $configRepo = "https://gitee.com/glsnames/scoop-installer"
     set_config SCOOP_REPO $configRepo | Out-Null
 }
 
@@ -206,7 +206,7 @@ function update($app, $global, $quiet = $false, $independent, $suggested, $use_c
     Write-Host "Updating '$app' ($old_version -> $version)"
 
     # region Workaround
-    # Workaround for https://e.coding.net/glimmer/scoop/scoopInstaller/issues/2220 until install is refactored
+    # Workaround for https://gitee.com/glsnames/scoop-installer/issues/2220 until install is refactored
     # Remove and replace whole region after proper fix
     Write-Host "Downloading new version"
     if (Test-Aria2Enabled) {
