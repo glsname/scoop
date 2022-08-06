@@ -1,4 +1,4 @@
-## [v0.2.4](https://github.com/ScoopInstaller/Scoop/compare/v0.2.3...v0.2.4) - 2022-08-05
+## [v0.2.4](https://github.com/ScoopInstaller/Scoop/compare/v0.2.3...v0.2.4) - 2022-08-08
 
 ### Features
 
@@ -6,10 +6,12 @@
 - **core:** Improve argument concatenation in `Invoke-ExternalCommand` ([#5065](https://github.com/ScoopInstaller/Scoop/issues/5065))
 - **install:** Show bucket name while installing an app ([#5075](https://github.com/ScoopInstaller/Scoop/issues/5075))
 - **scoop-status:** Add flag to disable remote checking ([#5073](https://github.com/ScoopInstaller/Scoop/issues/5073))
+- **scoop-update:** Add support for `pre_uninstall` and `post_uninstall` ([#5085](https://github.com/ScoopInstaller/Scoop/issues/5085))
 
 ### Bug Fixes
 
 - **core:** Avoid deadlock in `Invoke-ExternalCommand` ([#5064](https://github.com/ScoopInstaller/Scoop/issues/5064))
+- **core:** Use 'System.Nullable<bool>' for param 'global' ([#5088](https://github.com/ScoopInstaller/Scoop/issues/5088))
 - **install:** Move from cache when `--no-cache` is specified ([#5039](https://github.com/ScoopInstaller/Scoop/issues/5039))
 - **scoop-status:** Correct formatting of `Info` output ([#5047](https://github.com/ScoopInstaller/Scoop/issues/5047))
 
