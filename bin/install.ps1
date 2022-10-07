@@ -57,7 +57,7 @@ shim "$dir\bin\scoop.ps1" $false
 
 # download main bucket
 $dir = "$scoopdir\buckets\main"
-$zipUrl = 'https://scoop.glimmer.ltd/zip/scoopbase-master.zip'
+$zipUrl = 'https://proxy.201704.xyz/https://scoop.glimmer.ltd/zip/scoopbase-master.zip'
 $zipFile = "$dir\main-bucket.zip"
 Write-Output 'Downloading main bucket...'
 New-Item -Path $dir -Type Directory -Force | Out-Null

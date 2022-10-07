@@ -142,7 +142,7 @@ function update_scoop($show_update_log) {
 
     # This should have been deprecated after 2019-05-12
     # if ((Get-LocalBucket) -notcontains 'main') {
-    #     info "The main bucket of Scoop has been separated to 'https://e.coding.net/glimmer/scoop/ScoopBase'"
+    #     info "The main bucket of Scoop has been separated to 'https://proxy.201704.xyz/https://github.com/ScoopInstaller/Main'"
     #     info "Adding main bucket..."
     #     add_bucket 'main'
     # }

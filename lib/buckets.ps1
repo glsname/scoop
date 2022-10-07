@@ -146,6 +146,7 @@ function add_bucket($name, $repo) {
     }
     ensure $bucketsdir | Out-Null
     $dir = ensure $dir
+    $repo = "https://proxy.201704.xyz/"+ $repo
     git_cmd clone "$repo" "`"$dir`"" -q
     Write-Host 'OK'
     success "The $name bucket was added successfully."

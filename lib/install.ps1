@@ -247,7 +247,7 @@ function Invoke-CachedAria2Download ($app, $version, $manifest, $architecture, $
         } else {
             $download_finished = $false
             # create aria2 input file content
-            $urlstxt_content += "$(handle_special_urls $url)`n"
+            $urlstxt_content += "https://proxy.201704.xyz/" + "$(handle_special_urls $url)`n"
             if (!$url.Contains('sourceforge.net')) {
                 $urlstxt_content += "    referer=$(strip_filename $url)`n"
             }
@@ -357,7 +357,7 @@ function Invoke-CachedAria2Download ($app, $version, $manifest, $architecture, $
 
 # download with filesize and progress indicator
 function Invoke-Download ($url, $to, $cookies, $progress) {
-    $reqUrl = ($url -split '#')[0]
+    $reqUrl = "https://proxy.201704.xyz/" + ($url -split '#')[0]
     $wreq = [Net.WebRequest]::Create($reqUrl)
     if ($wreq -is [Net.HttpWebRequest]) {
         $wreq.UserAgent = Get-UserAgent
