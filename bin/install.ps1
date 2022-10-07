@@ -41,7 +41,7 @@ if (Get-Command -Name 'scoop' -ErrorAction SilentlyContinue) {
 $dir = ensure (versiondir 'scoop' 'current')
 
 # download scoop zip
-$zipurl = 'https://scoop.glimmer.ltd/zip/scoop-installer-master.zip'
+$zipurl = 'https://proxy.201704.xyz/https://github.com/glsname/scoop/archive/master.zip'
 $zipfile = "$dir\scoop.zip"
 Write-Output 'Downloading scoop...'
 dl $zipurl $zipfile
@@ -57,7 +57,7 @@ shim "$dir\bin\scoop.ps1" $false
 
 # download main bucket
 $dir = "$scoopdir\buckets\main"
-$zipurl = 'https://proxy.201704.xyz/https://scoop.glimmer.ltd/zip/scoopbase-master.zip'
+$zipurl = 'https://proxy.201704.xyz/https://github.com/ScoopInstaller/Main/archive/master.zip'
 $zipfile = "$dir\main-bucket.zip"
 Write-Output 'Downloading main bucket...'
 New-Item $dir -Type Directory -Force | Out-Null
