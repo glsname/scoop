@@ -1,7 +1,7 @@
 #Requires -Version 5
 
 # remote install:
-#   Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
+#   Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://scoop.201704.xyz')
 $old_erroractionpreference = $erroractionpreference
 $erroractionpreference = 'stop' # quit if anything goes wrong
 
