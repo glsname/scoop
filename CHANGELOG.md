@@ -1,5 +1,9 @@
 ## [Unreleased](https://github.com/ScoopInstaller/Scoop/compare/master...develop)
 
+### Features
+
+- **config:** Allow Scoop to check if apps versioned as 'nightly' are outdated ([#5166](https://github.com/ScoopInstaller/Scoop/issues/5166))
+
 ### Bug Fixes
 
 - **decompress:** Use PS's default 'Expand-Archive()' ([#5185](https://github.com/ScoopInstaller/Scoop/issues/5185))
@@ -15,6 +19,7 @@
 
 - **auto-pr:** Add `CommitMessageFormat` option ([#5171](https://github.com/ScoopInstaller/Scoop/issues/5171))
 - **checkver:** Support XML default namespace ([#5191](https://github.com/ScoopInstaller/Scoop/issues/5191))
+- **pssa:** Remove unused 'ExcludeRules' ([#5201](https://github.com/ScoopInstaller/Scoop/issues/5201))
 
 ### Tests
 
