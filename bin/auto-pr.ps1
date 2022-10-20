@@ -11,10 +11,6 @@
 .PARAMETER App
     Manifest name to search.
     Placeholders are supported.
-.PARAMETER CommitMessageFormat
-    The format of the commit message.
-    <app> will be replaced with the file name of manifest.
-    <version> will be replaced with the version of the latest manifest.
 .PARAMETER Dir
     The directory where to search for manifests.
 .PARAMETER Push
@@ -47,7 +43,6 @@ param(
     [String] $Upstream,
     [String] $OriginBranch = 'master',
     [String] $App = '*',
-    [String] $CommitMessageFormat = '<app>: Update to version <version>',
     [ValidateScript( {
         if (!(Test-Path $_ -Type Container)) {
             throw "$_ is not a directory!"
@@ -115,7 +110,7 @@ function execute($cmd) {
     return $output
 }
 
-function pull_requests($json, [String] $app, [String] $upstream, [String] $manifest, [String] $commitMessage) {
+function pull_requests($json, [String] $app, [String] $upstream, [String] $manifest) {
     $version = $json.version
     $homepage = $json.homepage
     $branch = "manifest/$app-$version"
@@ -132,7 +127,7 @@ function pull_requests($json, [String] $app, [String] $upstream, [String] $manif
     Write-Host "Creating update $app ($version) ..." -ForegroundColor DarkCyan
     execute "hub checkout -b $branch"
     execute "hub add $manifest"
-    execute "hub commit -m '$commitMessage"
+    execute "hub commit -m '${app}: Update to version $version'"
     Write-Host "Pushing update $app ($version) ..." -ForegroundColor DarkCyan
     execute "hub push origin $branch"
 
@@ -147,7 +142,7 @@ function pull_requests($json, [String] $app, [String] $upstream, [String] $manif
     Write-Host "hub pull-request -m '<msg>' -b '$upstream' -h '$branch'" -ForegroundColor Green
 
     $msg = @"
-$commitMessage
+$app`: Update to version $version
 
 Hello lovely humans,
 a new version of [$app]($homepage) is available.
@@ -160,7 +155,7 @@ a new version of [$app]($homepage) is available.
     hub pull-request -m "$msg" -b "$upstream" -h "$branch"
     if ($LASTEXITCODE -gt 0) {
         execute 'hub reset'
-        abort "Pull Request failed! (hub pull-request -m '$commitMessage' -b '$upstream' -h '$branch')"
+        abort "Pull Request failed! (hub pull-request -m '${app}: Update to version $version' -b '$upstream' -h '$branch')"
     }
 }
 
@@ -194,7 +189,7 @@ hub diff --name-only | ForEach-Object {
         return
     }
     $version = $json.version
-    $CommitMessage = $CommitMessageFormat -replace '<app>',$app -replace '<version>',$version
+
     if ($Push) {
         Write-Host "Creating update $app ($version) ..." -ForegroundColor DarkCyan
         execute "hub add $manifest"
@@ -203,12 +198,12 @@ hub diff --name-only | ForEach-Object {
         $status = execute 'hub status --porcelain -uno'
         $status = $status | Where-Object { $_ -match "M\s{2}.*$app.json" }
         if ($status -and $status.StartsWith('M  ') -and $status.EndsWith("$app.json")) {
-            execute "hub commit -m '$commitMessage'"
+            execute "hub commit -m '${app}: Update to version $version'"
         } else {
             Write-Host "Skipping $app because only LF/CRLF changes were detected ..." -ForegroundColor Yellow
         }
     } else {
-        pull_requests $json $app $Upstream $manifest $CommitMessage
+        pull_requests $json $app $Upstream $manifest
     }
 }
 

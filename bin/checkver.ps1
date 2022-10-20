@@ -310,17 +310,12 @@ while ($in_progress -gt 0) {
             # Then add them into the NamespaceManager
             $nsmgr = New-Object System.Xml.XmlNamespaceManager($xml.NameTable)
             $nsList | ForEach-Object {
-                if ($_.LocalName -eq 'xmlns') {
-                    $nsmgr.AddNamespace('ns', $_.Value)
-                    $xpath = $xpath -replace '/([^:/]+)((?=/)|(?=$))', '/ns:$1'
-                } else {
-                    $nsmgr.AddNamespace($_.LocalName, $_.Value)
-                }
+                $nsmgr.AddNamespace($_.LocalName, $_.Value)
             }
             # Getting version from XML, using XPath
             $ver = $xml.SelectSingleNode($xpath, $nsmgr).'#text'
             if (!$ver) {
-                next "couldn't find '$($xpath -replace 'ns:', '')' in $url"
+                next "couldn't find '$xpath' in $url"
                 continue
             }
         }
