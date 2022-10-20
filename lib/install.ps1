@@ -246,7 +246,7 @@ function Invoke-CachedAria2Download ($app, $version, $manifest, $architecture, $
         } else {
             $download_finished = $false
             # create aria2 input file content
-            if (!$url.Contains('scoop-zapps.ziiyc.com')){
+            if (!$url.Contains('scoop-zapps.ziiyc.com') -and !$url.Contains('scoop.glimmer.ltd')){
 				$urlstxt_content += "https://proxy.201704.xyz/" + "$(handle_special_urls $url)`n"
 			} else {
 				$urlstxt_content += "$(handle_special_urls $url)`n"
@@ -361,7 +361,7 @@ function Invoke-CachedAria2Download ($app, $version, $manifest, $architecture, $
 # download with filesize and progress indicator
 function Invoke-Download ($url, $to, $cookies, $progress) {
     $reqUrl = ($url -split '#')[0]
-	if (!$reqUrl.Contains('scoop-zapps.ziiyc.com')){
+	if (!$url.Contains('scoop-zapps.ziiyc.com') -and !$url.Contains('scoop.glimmer.ltd')){
 		$reqUrl = "https://proxy.201704.xyz/" + $reqUrl
 	}
     $wreq = [Net.WebRequest]::Create($reqUrl)
