@@ -1,8 +1,10 @@
 . "$PSScriptRoot\Scoop-TestLib.ps1"
 . "$PSScriptRoot\..\lib\core.ps1"
 . "$PSScriptRoot\..\lib\install.ps1"
+. "$PSScriptRoot\..\lib\unix.ps1"
 
 $repo_dir = (Get-Item $MyInvocation.MyCommand.Path).directory.parent.FullName
+$isUnix = is_unix
 
 Describe 'Get-AppFilePath' -Tag 'Scoop' {
     BeforeAll {
@@ -126,7 +128,7 @@ Describe 'is_directory' -Tag 'Scoop' {
     }
 }
 
-Describe 'movedir' -Tag 'Scoop', 'Windows' {
+Describe 'movedir' -Tag 'Scoop' {
     $extract_dir = 'subdir'
     $extract_to = $null
 
@@ -134,7 +136,7 @@ Describe 'movedir' -Tag 'Scoop', 'Windows' {
         $working_dir = setup_working 'movedir'
     }
 
-    It 'moves directories with no spaces in path' {
+    It 'moves directories with no spaces in path' -Skip:$isUnix {
         $dir = "$working_dir\user"
         movedir "$dir\_tmp\$extract_dir" "$dir\$extract_to"
 
@@ -142,7 +144,7 @@ Describe 'movedir' -Tag 'Scoop', 'Windows' {
         "$dir\_tmp\$extract_dir" | Should -Not -Exist
     }
 
-    It 'moves directories with spaces in path' {
+    It 'moves directories with spaces in path' -Skip:$isUnix {
         $dir = "$working_dir\user with space"
         movedir "$dir\_tmp\$extract_dir" "$dir\$extract_to"
 
@@ -155,7 +157,7 @@ Describe 'movedir' -Tag 'Scoop', 'Windows' {
         "$dir\_tmp" | Should -Not -Exist
     }
 
-    It 'moves directories with quotes in path' {
+    It 'moves directories with quotes in path' -Skip:$isUnix {
         $dir = "$working_dir\user with 'quote"
         movedir "$dir\_tmp\$extract_dir" "$dir\$extract_to"
 
@@ -164,14 +166,14 @@ Describe 'movedir' -Tag 'Scoop', 'Windows' {
     }
 }
 
-Describe 'shim' -Tag 'Scoop', 'Windows' {
+Describe 'shim' -Tag 'Scoop' {
     BeforeAll {
         $working_dir = setup_working 'shim'
         $shimdir = shimdir
         $(ensure_in_path $shimdir) | Out-Null
     }
 
-    It "links a file onto the user's path" {
+    It "links a file onto the user's path" -Skip:$isUnix {
         { Get-Command 'shim-test' -ea stop } | Should -Throw
         { Get-Command 'shim-test.ps1' -ea stop } | Should -Throw
         { Get-Command 'shim-test.cmd' -ea stop } | Should -Throw
@@ -185,7 +187,7 @@ Describe 'shim' -Tag 'Scoop', 'Windows' {
     }
 
     Context 'user with quote' {
-        It 'shims a file with quote in path' {
+        It 'shims a file with quote in path' -Skip:$isUnix {
             { Get-Command 'shim-test' -ea stop } | Should -Throw
             { shim-test } | Should -Throw
 
@@ -200,14 +202,14 @@ Describe 'shim' -Tag 'Scoop', 'Windows' {
     }
 }
 
-Describe 'rm_shim' -Tag 'Scoop', 'Windows' {
+Describe 'rm_shim' -Tag 'Scoop' {
     BeforeAll {
         $working_dir = setup_working 'shim'
         $shimdir = shimdir
         $(ensure_in_path $shimdir) | Out-Null
     }
 
-    It 'removes shim from path' {
+    It 'removes shim from path' -Skip:$isUnix {
         shim "$working_dir\shim-test.ps1" $false 'shim-test'
 
         rm_shim 'shim-test' $shimdir
@@ -219,7 +221,7 @@ Describe 'rm_shim' -Tag 'Scoop', 'Windows' {
     }
 }
 
-Describe 'get_app_name_from_shim' -Tag 'Scoop', 'Windows' {
+Describe 'get_app_name_from_shim' -Tag 'Scoop' {
     BeforeAll {
         $working_dir = setup_working 'shim'
         $shimdir = shimdir
@@ -227,11 +229,11 @@ Describe 'get_app_name_from_shim' -Tag 'Scoop', 'Windows' {
         Mock appsdir { $working_dir }
     }
 
-    It 'returns empty string if file does not exist' {
+    It 'returns empty string if file does not exist' -Skip:$isUnix {
         get_app_name_from_shim 'non-existent-file' | Should -Be ''
     }
 
-    It 'returns app name if file exists and is a shim to an app' {
+    It 'returns app name if file exists and is a shim to an app' -Skip:$isUnix {
         ensure "$working_dir/mockapp/current/"
         Write-Output '' | Out-File "$working_dir/mockapp/current/mockapp1.ps1"
         shim "$working_dir/mockapp/current/mockapp1.ps1" $false 'shim-test1'
@@ -244,7 +246,7 @@ Describe 'get_app_name_from_shim' -Tag 'Scoop', 'Windows' {
         get_app_name_from_shim "$shim_path2" | Should -Be 'mockapp'
     }
 
-    It 'returns empty string if file exists and is not a shim' {
+    It 'returns empty string if file exists and is not a shim' -Skip:$isUnix {
         Write-Output 'lorem ipsum' | Out-File -Encoding ascii "$working_dir/mock-shim.ps1"
         get_app_name_from_shim "$working_dir/mock-shim.ps1" | Should -Be ''
     }
@@ -261,12 +263,12 @@ Describe 'get_app_name_from_shim' -Tag 'Scoop', 'Windows' {
     }
 }
 
-Describe 'ensure_robocopy_in_path' -Tag 'Scoop', 'Windows' {
+Describe 'ensure_robocopy_in_path' -Tag 'Scoop' {
     $shimdir = shimdir $false
     Mock versiondir { $repo_dir }
 
     Context 'robocopy is not in path' {
-        It 'shims robocopy when not on path' {
+        It 'shims robocopy when not on path' -Skip:$isUnix {
             Mock Test-CommandAvailable { $false }
             Test-CommandAvailable robocopy | Should -Be $false
 
@@ -281,7 +283,7 @@ Describe 'ensure_robocopy_in_path' -Tag 'Scoop', 'Windows' {
     }
 
     Context 'robocopy is in path' {
-        It 'does not shim robocopy when it is in path' {
+        It 'does not shim robocopy when it is in path' -Skip:$isUnix {
             Mock Test-CommandAvailable { $true }
             Test-CommandAvailable robocopy | Should -Be $true
 

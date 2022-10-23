@@ -1,34 +1,3 @@
-## [Unreleased](https://github.com/ScoopInstaller/Scoop/compare/master...develop)
-
-### Features
-
-- **config:** Allow Scoop to check if apps versioned as 'nightly' are outdated ([#5166](https://github.com/ScoopInstaller/Scoop/issues/5166))
-
-### Bug Fixes
-
-- **decompress:** Use PS's default 'Expand-Archive()' ([#5185](https://github.com/ScoopInstaller/Scoop/issues/5185))
-- **hash:** Fix SourceForge's hash extraction ([#5189](https://github.com/ScoopInstaller/Scoop/issues/5189))
-- **decompress:** Trim ending '/' ([#5195](https://github.com/ScoopInstaller/Scoop/issues/5195))
-
-### Code Refactoring
-
-- **hash:** Use `Get-FileHash()` directly ([#5177](https://github.com/ScoopInstaller/Scoop/issues/5177))
-- **installer:** Drop the old installer ([#5186](https://github.com/ScoopInstaller/Scoop/issues/5186))
-
-### Builds
-
-- **auto-pr:** Add `CommitMessageFormat` option ([#5171](https://github.com/ScoopInstaller/Scoop/issues/5171))
-- **checkver:** Support XML default namespace ([#5191](https://github.com/ScoopInstaller/Scoop/issues/5191))
-- **pssa:** Remove unused 'ExcludeRules' ([#5201](https://github.com/ScoopInstaller/Scoop/issues/5201))
-
-### Continuous Integration
-
-- **module:** Update modules version ([#5209](https://github.com/ScoopInstaller/Scoop/issues/5209))
-
-### Tests
-
-- **unix:** Fix tests in Linux and macOS ([#5179](https://github.com/ScoopInstaller/Scoop/issues/5179))
-
 ## [v0.3.0](https://github.com/ScoopInstaller/Scoop/compare/v0.2.4...v0.3.0) - 2022-10-10
 
 ### Features

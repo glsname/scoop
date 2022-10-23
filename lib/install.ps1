@@ -1,8 +1,9 @@
-function nightly_version($quiet = $false) {
+function nightly_version($date, $quiet = $false) {
+    $date_str = $date.tostring("yyyyMMdd")
     if (!$quiet) {
         warn "This is a nightly version. Downloaded files won't be verified."
     }
-    return "nightly-$(Get-Date -Format 'yyyyMMdd')"
+    "nightly-$date_str"
 }
 
 function install_app($app, $architecture, $global, $suggested, $use_cache = $true, $check_hash = $true) {
@@ -20,7 +21,7 @@ function install_app($app, $architecture, $global, $suggested, $use_cache = $tru
 
     $is_nightly = $version -eq 'nightly'
     if ($is_nightly) {
-        $version = nightly_version
+        $version = nightly_version $(get-date)
         $check_hash = $false
     }
 
@@ -666,7 +667,7 @@ function hash_for_url($manifest, $url, $arch) {
 function check_hash($file, $hash, $app_name) {
     $file = fullpath $file
     if(!$hash) {
-        warn "Warning: No hash in manifest. SHA256 for '$(fname $file)' is:`n    $((Get-FileHash -Path $file -Algorithm SHA256).Hash.ToLower())"
+        warn "Warning: No hash in manifest. SHA256 for '$(fname $file)' is:`n    $(compute_hash $file 'sha256')"
         return $true, $null
     }
 
@@ -678,7 +679,7 @@ function check_hash($file, $hash, $app_name) {
         return $false, "Hash type '$algorithm' isn't supported."
     }
 
-    $actual = (Get-FileHash -Path $file -Algorithm $algorithm).Hash.ToLower()
+    $actual = compute_hash $file $algorithm
     $expected = $expected.ToLower()
 
     if($actual -ne $expected) {
@@ -696,6 +697,25 @@ function check_hash($file, $hash, $app_name) {
     }
     Write-Host "ok." -f Green
     return $true, $null
+}
+
+function compute_hash($file, $algname) {
+    try {
+        if(Test-CommandAvailable Get-FileHash) {
+            return (Get-FileHash -Path $file -Algorithm $algname).Hash.ToLower()
+        } else {
+            $fs = [system.io.file]::openread($file)
+            $alg = [system.security.cryptography.hashalgorithm]::create($algname)
+            $hexbytes = $alg.computehash($fs) | ForEach-Object { $_.tostring('x2') }
+            return [string]::join('', $hexbytes)
+        }
+    } catch {
+        error $_.exception.message
+    } finally {
+        if($fs) { $fs.dispose() }
+        if($alg) { $alg.dispose() }
+    }
+    return ''
 }
 
 # for dealing with installers
