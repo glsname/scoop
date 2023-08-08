@@ -61,7 +61,7 @@ If you've built software that you'd like others to use, Scoop is an alternative 
 Run the following command from a **non-admin** PowerShell to install scoop to its default location `C:\Users\<YOUR USERNAME>\scoop`.
 
 ```powershell
-iwr -useb scoop.201704.xyz | iex
+iwr -useb proxy.201704.xyz | iex
 ```
 
 Advanced installation instruction and full documentation of the installer are available in [ScoopInstaller/Install](https://github.com/ScoopInstaller/Install). Please create new issues there if you have questions about the installation.
